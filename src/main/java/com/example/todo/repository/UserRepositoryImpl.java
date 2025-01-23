@@ -49,7 +49,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User findById(Long id) {
         List<User> res = jdbcTemplate.query("select * from users where id = ?", userMapper(), id);
-        return res.stream().findAny().orElseThrow();
+        return res.stream().findAny().orElseThrow(()->new RuntimeException("Null"));
     }
 
 

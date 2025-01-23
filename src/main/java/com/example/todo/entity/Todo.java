@@ -11,6 +11,7 @@ public class Todo {
     private long id;
     private long userId;
     private String todo;
+    private String pwd;
     private Date createDt;
     private Date modDt;
 }

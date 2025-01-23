@@ -19,17 +19,17 @@ class UserRepositoryImplTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User mockUser;
+    private UserDto mockUser;
 
     @BeforeEach
     void setUp() {
-        mockUser = new User(0, "Test User", "test@example.com", Date.valueOf("2023-01-01"), Date.valueOf("2023-01-02"));
+        mockUser = new UserDto(0, "Test User", "test@example.com");
     }
 
     @Test
     @Transactional
     void testInsertUser() {
-        UserDto result = userRepository.insert(mockUser);
+        User result = userRepository.insert(mockUser);
         assertNotNull(result);
         assertEquals(mockUser.getName(), result.getName());
         assertEquals(mockUser.getEmail(), result.getEmail());
@@ -38,33 +38,30 @@ class UserRepositoryImplTest {
     @Test
     @Transactional
     void testFindUserById() {
-        UserDto result = userRepository.insert(mockUser);
-        Optional<UserDto> byId = userRepository.findById(result.getId());
-        assertTrue(byId.isPresent());
-        assertEquals(mockUser.getName(), byId.get().getName());
-        assertEquals(mockUser.getEmail(), byId.get().getEmail());
+        User result = userRepository.insert(mockUser);
+        User byId = userRepository.findById(result.getId());
+        assertEquals(mockUser.getName(), byId.getName());
+        assertEquals(mockUser.getEmail(), byId.getEmail());
     }
 
     @Test
     @Transactional
     void testUpdateUser() {
-        UserDto result = userRepository.insert(mockUser);
+        User result = userRepository.insert(mockUser);
         long userId = result.getId();
         String updatedName = "Updated User";
         String updatedEmail = "updated@example.com";
 
         userRepository.update(userId, updatedName, updatedEmail);
-        Optional<UserDto> updatedUser = userRepository.findById(userId);
+        User updatedUser = userRepository.findById(userId);
 
-        assertTrue(updatedUser.isPresent());
-        assertEquals(updatedName, updatedUser.get().getName());
-        assertEquals(updatedEmail, updatedUser.get().getEmail());
+        assertEquals(updatedName, updatedUser.getName());
+        assertEquals(updatedEmail, updatedUser.getEmail());
     }
 
     @Test
     @Transactional
     void testFindUserByNonExistentId() {
-        Optional<UserDto> byId = userRepository.findById(-1L);
-        assertTrue(byId.isEmpty());
+        assertThrows(RuntimeException.class, () -> userRepository.findById(-1L));
     }
 }

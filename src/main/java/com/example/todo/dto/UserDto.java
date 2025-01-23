@@ -1,5 +1,6 @@
 package com.example.todo.dto;
 
+import com.example.todo.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,5 +13,9 @@ public class UserDto {
     private long id;
     private String name;
     private String email;
-    private Date mod_dt;
+    public UserDto(User user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+    }
 }

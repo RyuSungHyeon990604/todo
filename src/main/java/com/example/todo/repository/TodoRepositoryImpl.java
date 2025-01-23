@@ -55,7 +55,7 @@ public class TodoRepositoryImpl implements TodoRepository {
         params.put("mod_dt", now);
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(params));
-        return new Todo(key.longValue(), userId, todo.getTodo(), now, now);
+        return new Todo(key.longValue(), userId, todo.getTodo(),todo.getPwd(), now, now);
 
     }
 
@@ -79,6 +79,7 @@ public class TodoRepositoryImpl implements TodoRepository {
                         rs.getInt("id"),
                         rs.getInt("user_id"),
                         rs.getString("todo"),
+                        rs.getString("pwd"),
                         rs.getDate("create_dt"),
                         rs.getDate("mod_dt")
                 );
