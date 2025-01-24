@@ -1,5 +1,6 @@
 package com.example.todo.entity;
 
+import com.example.todo.dto.TodoDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -16,4 +17,10 @@ public class Todo {
     private String pwd;
     private LocalDateTime createDt;
     private LocalDateTime modDt;
+
+    public Todo(User user, TodoDto todoDto) {
+        this.user = user;
+        this.todo = todoDto.getTodo();
+        this.pwd = todoDto.getPwd();
+    }
 }
