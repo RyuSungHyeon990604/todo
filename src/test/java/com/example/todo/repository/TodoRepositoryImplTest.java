@@ -33,7 +33,7 @@ class TodoRepositoryImplTest {
         User user = new User("Test User", "test@example.com", null, now.toLocalDateTime());
         User insert = userRepository.insert(user);
         userId = insert.getId();
-        todo = new Todo(null, insert.getId(), "할일", "1234", now.toLocalDateTime(), now.toLocalDateTime());
+        todo = new Todo(null, insert.getId(),"할일", "1234", now.toLocalDateTime(), now.toLocalDateTime());
     }
 
     @Test

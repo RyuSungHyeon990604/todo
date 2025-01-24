@@ -13,12 +13,11 @@ import java.util.Date;
 @AllArgsConstructor
 public class TodoDto {
     private Long id;
-    private Long userId;
+    private String userName;
     private String todo;
     private LocalDateTime modDt;
     public TodoDto(Todo todo) {
         this.id = todo.getId();
-        this.userId = todo.getUserId();
         this.todo = todo.getTodo();
         this.modDt = todo.getModDt();
     }
