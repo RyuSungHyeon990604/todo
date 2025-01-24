@@ -13,8 +13,6 @@ public interface TodoRepository {
 
     Todo findById(Long id);
 
-    List<Todo> findAllByUserId(Long userId);
-
     Todo insert(Todo todo);
 
     int deleteById(Long id);

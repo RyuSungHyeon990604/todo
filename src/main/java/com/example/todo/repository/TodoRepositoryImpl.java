@@ -44,13 +44,13 @@ public class TodoRepositoryImpl implements TodoRepository {
                 "       from todo t" +
                 "      inner join users u" +
                 "              on t.user_id = u.id" +
-                "      where 1 = 1";
+                "      where 1 = 1 ";
         StringBuilder sql = new StringBuilder(defaultSql);
         if(userId != null) {
-            sql.append("and t.user_id =");
+            sql.append(" and t.user_id =");
             sql.append(userId);
         }
-        sql.append("order by mod_dt desc");
+        sql.append(" order by mod_dt desc");
         if(page != null){
             sql.append("limit ");
             sql.append(page*pageSize);
@@ -83,26 +83,6 @@ public class TodoRepositoryImpl implements TodoRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new RuntimeException("Empty Result");
         }
-    }
-
-    @Override
-    public List<Todo> findAllByUserId(Long userId) {
-        String sql = "select t.id         as todo_id" +
-                "          , t.todo       as todo" +
-                "          , t.pwd        as pwd" +
-                "          , t.create_dt  as create_dt" +
-                "          , t.mod_dt     as mod_dt" +
-                "          , u.id         as user_id" +
-                "          , u.name       as user_name" +
-                "          , u.email      as user_email" +
-                "          , u.create_dt  as user_create_dt" +
-                "          , u.mod_dt     as user_mod_dt" +
-                "       from todo t" +
-                "      inner join users u" +
-                "              on t.user_id = u.id" +
-                "      where u.id = ?";
-        List<Todo> res = jdbcTemplate.query(sql, todoRowMapper(), userId);
-        return res;
     }
 
     @Override

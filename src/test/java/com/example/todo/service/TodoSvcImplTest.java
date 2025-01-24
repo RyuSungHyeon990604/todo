@@ -43,15 +43,15 @@ class TodoSvcImplTest {
         // given
         Todo todo1 = new Todo(1L, user, "Todo 1", "pwd1", LocalDateTime.now(), LocalDateTime.now());
         Todo todo2 = new Todo(2L, user, "Todo 2", "pwd2", LocalDateTime.now(), LocalDateTime.now());
-        when(todoRepo.findAll()).thenReturn(Arrays.asList(todo1, todo2));
+        when(todoRepo.findAll(null,null)).thenReturn(Arrays.asList(todo1, todo2));
 
         // when
-        List<TodoDto> result = todoSvc.findAll();
+        List<TodoDto> result = todoSvc.findAll(null,null);
 
         // then
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getTodo()).isEqualTo("Todo 1");
-        verify(todoRepo, times(1)).findAll();
+        verify(todoRepo, times(1)).findAll(null,null);
     }
 
     @Test
@@ -89,15 +89,16 @@ class TodoSvcImplTest {
         Long userId = 1L;
         TodoDto todoDto = new TodoDto();
         todoDto.setTodo("Todo 1");
+        todoDto.setUserId(userId);
         User user = new User(userId, "User 1", "user1@example.com", LocalDateTime.now(), LocalDateTime.now());
         Todo todo = new Todo(null, user, "New Todo", "pwd", LocalDateTime.now(), LocalDateTime.now());
         Todo insertedTodo = new Todo(1L, user, "New Todo", "pwd", LocalDateTime.now(), LocalDateTime.now());
 
-        when(userRepo.findById(userId)).thenReturn(user);
+        when(userRepo.findById(any())).thenReturn(user);
         when(todoRepo.insert(any(Todo.class))).thenReturn(insertedTodo);
 
         // when
-        TodoDto result = todoSvc.insert(userId, todoDto);
+        TodoDto result = todoSvc.insert(todoDto);
 
         // then
         assertThat(result.getTodo()).isEqualTo("New Todo");
@@ -127,10 +128,11 @@ class TodoSvcImplTest {
         Long userId = 1L;
         TodoDto todoDto = new TodoDto();
         todoDto.setTodo("Insert Todo");
-        when(userRepo.findById(userId)).thenThrow(new RuntimeException("User not found"));
+        todoDto.setUserId(userId);
+        when(userRepo.findById(any())).thenThrow(new RuntimeException("User not found"));
 
         // when & then
-        assertThrows(RuntimeException.class, () -> todoSvc.insert(userId, todoDto));
+        assertThrows(RuntimeException.class, () -> todoSvc.insert(todoDto));
         verify(userRepo, times(1)).findById(userId);
         verify(todoRepo, times(0)).insert(any(Todo.class));
     }

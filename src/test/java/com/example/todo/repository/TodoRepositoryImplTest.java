@@ -61,24 +61,11 @@ class TodoRepositoryImplTest {
         todoRepository.insert(todo);
         todoRepository.insert(new Todo(null, user, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
 
-        List<Todo> todos = todoRepository.findAll();
+        List<Todo> todos = todoRepository.findAll(null,null);
 
         assertFalse(todos.isEmpty());
         assertTrue(todos.stream().anyMatch(t -> t.getTodo().equals("할일")));
         assertTrue(todos.stream().anyMatch(t -> t.getTodo().equals("다른 할일")));
-    }
-
-
-    @Test
-    @Transactional
-    void testFindAllByUserId() {
-        todoRepository.insert(todo);
-        todoRepository.insert(new Todo(null, user, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
-
-        List<Todo> todos = todoRepository.findAllByUserId(user.getId());
-
-        assertFalse(todos.isEmpty());
-        assertTrue(todos.stream().allMatch(t -> t.getUser().getId().equals(user.getId())));
     }
 
     @Test
@@ -89,7 +76,7 @@ class TodoRepositoryImplTest {
         int rowsAffected = todoRepository.deleteById(insert.getId());
         assertEquals(1, rowsAffected);
 
-        List<Todo> todos = todoRepository.findAll();
+        List<Todo> todos = todoRepository.findAll(null,null);
         assertTrue(todos.stream().noneMatch(t -> t.getId().equals(insert.getId())));
     }
 
