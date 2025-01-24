@@ -24,16 +24,18 @@ class TodoRepositoryImplTest {
 
     private Todo todo;
     private Todo todoNull = new Todo(null,null,null,null,null,null);
+    User user;
     private Long userId;
 
     @BeforeEach
     @Transactional
     void setUp() {
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        User user = new User("Test User", "test@example.com", null, now.toLocalDateTime());
-        User insert = userRepository.insert(user);
-        userId = insert.getId();
-        todo = new Todo(null, insert.getId(),"할일", "1234", now.toLocalDateTime(), now.toLocalDateTime());
+        user = new User("Test User", "test@example.com", null, now.toLocalDateTime());
+        user = userRepository.insert(user);
+
+
+        todo = new Todo(null, user,"할일", "1234", now.toLocalDateTime(), now.toLocalDateTime());
     }
 
     @Test
@@ -43,7 +45,7 @@ class TodoRepositoryImplTest {
         assertEquals("할일", insert.getTodo());
         assertEquals("1234", insert.getPwd());
         assertNotNull(insert.getId());
-        assertEquals(userId, insert.getUserId());
+        assertEquals(user.getId(), insert.getUser().getId());
     }
 
     @Test
@@ -57,7 +59,7 @@ class TodoRepositoryImplTest {
     @Transactional
     void testFindAll() {
         todoRepository.insert(todo);
-        todoRepository.insert(new Todo(null, userId, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
+        todoRepository.insert(new Todo(null, user, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
 
         List<Todo> todos = todoRepository.findAll();
 
@@ -71,12 +73,12 @@ class TodoRepositoryImplTest {
     @Transactional
     void testFindAllByUserId() {
         todoRepository.insert(todo);
-        todoRepository.insert(new Todo(null, userId, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
+        todoRepository.insert(new Todo(null, user, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
 
-        List<Todo> todos = todoRepository.findAllByUserId(userId);
+        List<Todo> todos = todoRepository.findAllByUserId(user.getId());
 
         assertFalse(todos.isEmpty());
-        assertTrue(todos.stream().allMatch(t -> t.getUserId().equals(userId)));
+        assertTrue(todos.stream().allMatch(t -> t.getUser().getId().equals(user.getId())));
     }
 
     @Test

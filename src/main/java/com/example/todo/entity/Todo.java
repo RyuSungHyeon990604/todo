@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class Todo {
     private Long id;
-    private Long userId;
+    private User user;
     private String todo;
     private String pwd;
     private LocalDateTime createDt;
