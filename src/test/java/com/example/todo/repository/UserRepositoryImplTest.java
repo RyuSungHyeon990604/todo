@@ -25,14 +25,13 @@ class UserRepositoryImplTest {
     @BeforeEach
     void setUp() {
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        mockUser = new User("Test User", "test@example.com",null,now.toLocalDateTime());
+        mockUser = new User("Test User", "test@example.com",now.toLocalDateTime(),now.toLocalDateTime());
     }
 
     @Test
     @Transactional
     void testInsertUser() {
-        Long id = userRepository.insert(mockUser);
-        User result = userRepository.findById(id);
+        User result = userRepository.insert(mockUser);
         assertNotNull(result);
         assertEquals(mockUser.getName(), result.getName());
         assertEquals(mockUser.getEmail(), result.getEmail());
@@ -41,8 +40,7 @@ class UserRepositoryImplTest {
     @Test
     @Transactional
     void testFindUserById() {
-        Long id = userRepository.insert(mockUser);
-        User result = userRepository.findById(id);
+        User result = userRepository.insert(mockUser);
         User byId = userRepository.findById(result.getId());
         assertEquals(mockUser.getName(), byId.getName());
         assertEquals(mockUser.getEmail(), byId.getEmail());
@@ -50,19 +48,25 @@ class UserRepositoryImplTest {
 
     @Test
     @Transactional
-    void testUpdateUser() {
-        Long id = userRepository.insert(mockUser);
-        User result = userRepository.findById(id);
+    void testUpdateUser() throws InterruptedException {
+        Timestamp updateDt = new Timestamp(System.currentTimeMillis());
+        User result = userRepository.insert(mockUser);
         long userId = result.getId();
+        UserDto dto = new UserDto();
         String updatedName = "Updated User";
         String updatedEmail = "updated@example.com";
+        dto.setName(updatedName);
+        dto.setEmail(updatedEmail);
+        dto.setModDt(updateDt.toLocalDateTime());
 
-        userRepository.update(userId, updatedName, updatedEmail);
+        userRepository.update(userId, dto);
         User updatedUser = userRepository.findById(userId);
 
         assertEquals(updatedName, updatedUser.getName());
         assertEquals(updatedEmail, updatedUser.getEmail());
-        assertEquals(result.getCreateDt(), updatedUser.getCreateDt());
+        System.out.println(updatedUser.getModDt());
+        System.out.println(result.getCreateDt());
+        assertTrue(updatedUser.getModDt().isAfter(result.getCreateDt()));
     }
 
     @Test

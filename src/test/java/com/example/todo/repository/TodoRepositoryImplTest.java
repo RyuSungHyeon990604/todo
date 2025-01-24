@@ -1,5 +1,6 @@
 package com.example.todo.repository;
 
+import com.example.todo.dto.TodoDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ class TodoRepositoryImplTest {
     private UserRepository userRepository;
 
     private Todo todo;
+    private Todo todoNull = new Todo(null,null,null,null,null,null);
     private Long userId;
 
     @BeforeEach
@@ -29,15 +31,15 @@ class TodoRepositoryImplTest {
     void setUp() {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         User user = new User("Test User", "test@example.com", null, now.toLocalDateTime());
-        userId = userRepository.insert(user);
-        todo = new Todo(null, null, "할일", "1234", now.toLocalDateTime(), now.toLocalDateTime());
+        User insert = userRepository.insert(user);
+        userId = insert.getId();
+        todo = new Todo(null, insert.getId(), "할일", "1234", now.toLocalDateTime(), now.toLocalDateTime());
     }
 
     @Test
     @Transactional
     void testInsertTodo() {
-        Long id = todoRepository.insert(userId, todo);
-        Todo insert = todoRepository.findById(id);
+        Todo insert = todoRepository.insert(todo);
         assertEquals("할일", insert.getTodo());
         assertEquals("1234", insert.getPwd());
         assertNotNull(insert.getId());
@@ -46,9 +48,16 @@ class TodoRepositoryImplTest {
 
     @Test
     @Transactional
+    void testInsertNullTodo() {
+        assertThrows(IllegalArgumentException.class, ()->todoRepository.insert(todoNull));
+        assertThrows(NullPointerException.class, ()->todoRepository.insert(null));
+    }
+
+    @Test
+    @Transactional
     void testFindAll() {
-        todoRepository.insert(userId, todo);
-        todoRepository.insert(userId, new Todo(null, null, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
+        todoRepository.insert(todo);
+        todoRepository.insert(new Todo(null, userId, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
 
         List<Todo> todos = todoRepository.findAll();
 
@@ -61,8 +70,8 @@ class TodoRepositoryImplTest {
     @Test
     @Transactional
     void testFindAllByUserId() {
-        todoRepository.insert(userId, todo);
-        todoRepository.insert(userId, new Todo(null, null, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
+        todoRepository.insert(todo);
+        todoRepository.insert(new Todo(null, userId, "다른 할일", "5678", todo.getCreateDt(), todo.getModDt()));
 
         List<Todo> todos = todoRepository.findAllByUserId(userId);
 
@@ -73,33 +82,36 @@ class TodoRepositoryImplTest {
     @Test
     @Transactional
     void testDeleteById() {
-        Long id = todoRepository.insert(userId, todo);
+        Todo insert = todoRepository.insert(todo);
 
-        int rowsAffected = todoRepository.deleteById(id);
+        int rowsAffected = todoRepository.deleteById(insert.getId());
         assertEquals(1, rowsAffected);
 
         List<Todo> todos = todoRepository.findAll();
-        assertTrue(todos.stream().noneMatch(t -> t.getId().equals(id)));
+        assertTrue(todos.stream().noneMatch(t -> t.getId().equals(insert.getId())));
     }
 
     @Test
     @Transactional
     void testUpdateTodo() throws InterruptedException {
-        Long id = todoRepository.insert(userId, todo);
-        Todo insert = todoRepository.findById(id);
+        Todo insert = todoRepository.insert(todo);
+
+        Todo find = todoRepository.findById(insert.getId());
+
         Thread.sleep(1000);
         Timestamp now2 = new Timestamp(System.currentTimeMillis());
         String updatedStr = "업데이트된 할일";
-        Todo updatedTodo = new Todo(null,null,updatedStr, "5678", insert.getCreateDt(), now2.toLocalDateTime());
+        TodoDto todoDto = new TodoDto();
+        todoDto.setTodo(updatedStr);
+        todoDto.setModDt(now2.toLocalDateTime());
 
+        int rowsAffected = todoRepository.update(find.getId(), todoDto);
+        Todo updated = todoRepository.findById(find.getId());
 
-        int rowsAffected = todoRepository.update(id, updatedTodo);
         assertEquals(1, rowsAffected);
-
-        Todo updated = todoRepository.findById(id);
         assertNotNull(updated);
         assertEquals(updatedStr, updated.getTodo());
-        assertTrue(updated.getModDt().isAfter(insert.getCreateDt()));
-        assertEquals(insert.getCreateDt(), updated.getCreateDt());
+        assertTrue(updated.getModDt().isAfter(find.getCreateDt()));
+        assertEquals(find.getCreateDt(), updated.getCreateDt());
     }
 }

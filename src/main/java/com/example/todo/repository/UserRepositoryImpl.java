@@ -2,11 +2,13 @@ package com.example.todo.repository;
 
 import com.example.todo.dto.UserDto;
 import com.example.todo.entity.User;
+import lombok.NonNull;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,7 +27,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Long insert(User user) {
+    public User insert(@NonNull User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
         insert.withTableName("users").usingGeneratedKeyColumns("id");
         Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -38,16 +40,19 @@ public class UserRepositoryImpl implements UserRepository {
 
         Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
 
-        return key.longValue();
+        return new User(key.longValue(), user.getName(), user.getEmail(), user.getCreateDt(), user.getModDt());
     }
 
     @Override
-    public int update(Long id, String name, String email) {
-        return jdbcTemplate.update("update users set name = ?, email = ? where id = ?", name, email, id);
+    public int update(@NonNull Long id, @NonNull UserDto user) {
+        Assert.notNull(user.getName(), "user.name must not be null");
+        Assert.notNull(user.getEmail(), "user.email must not be null");
+        Assert.notNull(user.getModDt(), "user.modDt must not be null");
+        return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), user.getModDt(), id);
     }
 
     @Override
-    public User findById(Long id) {
+    public User findById(@NonNull Long id) {
         List<User> res = jdbcTemplate.query("select * from users where id = ?", userMapper(), id);
         return res.stream().findAny().orElseThrow(()->new RuntimeException("Null"));
     }

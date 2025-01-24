@@ -6,9 +6,9 @@ import com.example.todo.entity.User;
 import java.util.Optional;
 
 public interface UserRepository {
-    Long insert(User user);
+    User insert(User user);
 
-    int update(Long id, String name, String email);
+    int update(Long id, UserDto user);
 
     User findById(Long id);
 }
