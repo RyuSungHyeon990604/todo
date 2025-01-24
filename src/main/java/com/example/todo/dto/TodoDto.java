@@ -1,14 +1,15 @@
 package com.example.todo.dto;
 
 import com.example.todo.entity.Todo;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class TodoDto {
     private Long id;
