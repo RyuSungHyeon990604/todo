@@ -15,11 +15,13 @@ import java.util.Date;
 @AllArgsConstructor
 public class UserDto {
     private Long id;
+    private Long userId;
     private String name;
     private String email;
     private LocalDateTime modDt;
     public UserDto(User user) {
         this.id = user.getId();
+        this.userId = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();
         this.modDt = user.getModDt();

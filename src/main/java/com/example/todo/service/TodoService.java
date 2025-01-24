@@ -8,7 +8,7 @@ public interface TodoService {
     List<TodoDto> findAll();
     TodoDto findById(Long id);
     void deleteById(Long id);
-    TodoDto insert(Long userId, TodoDto todoDto);
+    TodoDto insert(TodoDto todoDto);
     void update(Long id, TodoDto todoDto);
 
 }

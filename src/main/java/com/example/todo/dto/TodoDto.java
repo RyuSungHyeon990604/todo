@@ -13,6 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class TodoDto {
     private Long id;
+    private Long userId;
     private String userName;
     private String todo;
     private String pwd;
@@ -20,6 +21,8 @@ public class TodoDto {
     public TodoDto(Todo todo) {
         this.id = todo.getId();
         this.userName = todo.getUser().getName();
+        this.userId = todo.getUser().getId();
         this.todo = todo.getTodo();
+        this.modDt = todo.getModDt();
     }
 }

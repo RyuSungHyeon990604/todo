@@ -50,9 +50,9 @@ public class TodoSvcImpl implements TodoService {
 
     @Override
     @Transactional
-    public TodoDto insert(Long userId, TodoDto todoDto) {
+    public TodoDto insert(TodoDto todoDto) {
         //해당 사용자가 존재하면 insert
-        User user = userRepo.findById(userId);
+        User user = userRepo.findById(todoDto.getUserId());
         Todo todo = new Todo(user,todoDto);
 
         Todo insert = todoRepo.insert(todo);

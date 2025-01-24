@@ -3,9 +3,11 @@ package com.example.todo.service;
 import com.example.todo.dto.UserDto;
 import com.example.todo.entity.User;
 import com.example.todo.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class UserSvcImpl implements UserService{
     private final UserRepository userRepository;
 

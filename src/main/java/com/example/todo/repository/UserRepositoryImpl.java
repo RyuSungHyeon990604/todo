@@ -27,7 +27,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User insert(@NonNull User user) {
+    public User insert(User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
         insert.withTableName("users").usingGeneratedKeyColumns("id");
         LocalDateTime now = LocalDateTime.now();
@@ -44,15 +44,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public int update(@NonNull Long id, @NonNull UserDto user) {
-        Assert.notNull(user.getName(), "user.name must not be null");
-        Assert.notNull(user.getEmail(), "user.email must not be null");
-        Assert.notNull(user.getModDt(), "user.modDt must not be null");
+    public int update(Long id, UserDto user) {
         return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now(), id);
     }
 
     @Override
-    public User findById(@NonNull Long id) {
+    public User findById(Long id) {
         List<User> res = jdbcTemplate.query("select * from users where id = ?", userMapper(), id);
         return res.stream().findAny().orElseThrow(()->new RuntimeException("Null"));
     }

@@ -47,7 +47,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public Todo findById(@NonNull Long id) {
+    public Todo findById(Long id) {
         try {
             Assert.notNull(id, "id must not be null");
             String sql = "select t.id         as todo_id" +
@@ -72,7 +72,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<Todo> findAllByUserId(@NonNull Long userId) {
+    public List<Todo> findAllByUserId(Long userId) {
         String sql = "select t.id         as todo_id" +
                 "          , t.todo       as todo" +
                 "          , t.pwd        as pwd" +
@@ -92,12 +92,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public Todo insert(@NonNull Todo todo) {
-        Assert.notNull(todo.getUser(), "todo.user must not be null");
-        Assert.notNull(todo.getTodo(), "todo.todo must not be null");
-        Assert.notNull(todo.getPwd(), "todo.pwd must not be null");
-        Assert.notNull(todo.getCreateDt(), "todo.creat_dt must not be null");
-        Assert.notNull(todo.getModDt(), "todo.mod_dt must not be null");
+    public Todo insert(Todo todo) {
 
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         simpleJdbcInsert.withTableName("todo").usingGeneratedKeyColumns("id");
@@ -115,14 +110,13 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public int deleteById(@NonNull Long id) {
-        Assert.notNull(id, "id must not be null");
+    public int deleteById(Long id) {
 
         return jdbcTemplate.update("delete from todo where id = ?", id);
     }
 
     @Override
-    public int update(@NonNull Long id, @NonNull TodoDto todoDto) {
+    public int update(Long id, TodoDto todoDto) {
         Assert.notNull(todoDto.getTodo(), "todoDto.todo must not be null");
         Assert.notNull(todoDto.getModDt(), "todoDto.mod_dt must not be null");
 
