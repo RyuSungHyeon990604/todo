@@ -6,7 +6,7 @@ import com.example.todo.entity.User;
 import java.util.Optional;
 
 public interface UserRepository {
-    User insert(UserDto user);
+    Long insert(User user);
 
     int update(Long id, String name, String email);
 

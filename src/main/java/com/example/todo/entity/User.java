@@ -1,22 +1,29 @@
 package com.example.todo.entity;
 
+import com.example.todo.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
 @AllArgsConstructor
 public class User {
-    private long id;
+    private Long id;
     private String name;
     private String email;
-    private Date create_dt;
-    private Date mod_dt;
-    public User(String name, String email, Date create_dt, Date mod_dt) {
+    private LocalDateTime createDt;
+    private LocalDateTime  modDt;
+    public User(String name, String email, LocalDateTime  createDt, LocalDateTime  modDt) {
         this.name = name;
         this.email = email;
-        this.create_dt = create_dt;
-        this.mod_dt = mod_dt;
+        this.createDt = createDt;
+        this.modDt = modDt;
+    }
+    public User(UserDto dto){
+        this.name = dto.getName();
+        this.email = dto.getEmail();
     }
 }

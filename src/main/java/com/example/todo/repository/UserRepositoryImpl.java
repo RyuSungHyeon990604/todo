@@ -25,7 +25,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User insert(UserDto user) {
+    public Long insert(User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
         insert.withTableName("users").usingGeneratedKeyColumns("id");
         Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -38,7 +38,7 @@ public class UserRepositoryImpl implements UserRepository {
 
         Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
 
-        return new User(key.longValue(), user.getName(), user.getEmail(), now, now);
+        return key.longValue();
     }
 
     @Override
@@ -57,11 +57,12 @@ public class UserRepositoryImpl implements UserRepository {
         return new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new User(rs.getInt("id"),
+                return new User(
+                        rs.getLong("id"),
                         rs.getString("name"),
                         rs.getString("email"),
-                        rs.getDate("create_dt"),
-                        rs.getDate("mod_dt")
+                        rs.getTimestamp("create_dt").toLocalDateTime(),
+                        rs.getTimestamp("mod_dt").toLocalDateTime()
                 );
             }
         };

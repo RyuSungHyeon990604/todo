@@ -15,10 +15,10 @@ public interface TodoRepository {
 
     List<Todo> findAllByUserId(Long userId);
 
-    Todo insert(Long userId, TodoDto todo);
+    Long insert(Long userId, Todo todo);
 
     int deleteById(Long id);
 
-    int update(Long id, String todo);
+    int update(Long id, Todo todo);
 
 }

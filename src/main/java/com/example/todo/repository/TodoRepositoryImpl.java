@@ -42,20 +42,19 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public Todo insert(Long userId, TodoDto todo) {
+    public Long insert(Long userId, Todo todo) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         simpleJdbcInsert.withTableName("todo").usingGeneratedKeyColumns("id");
-        Timestamp now = new Timestamp(System.currentTimeMillis());
 
         Map<String, Object> params = new HashMap<>();
         params.put("user_id", userId);
         params.put("todo", todo.getTodo());
         params.put("pwd", todo.getPwd());
-        params.put("create_dt", now);
-        params.put("mod_dt", now);
+        params.put("create_dt", todo.getCreateDt());
+        params.put("mod_dt", todo.getModDt());
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(params));
-        return new Todo(key.longValue(), userId, todo.getTodo(),todo.getPwd(), now, now);
+        return key.longValue();
 
     }
 
@@ -65,9 +64,8 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public int update(Long id, String todo) {
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todo, now, id);
+    public int update(Long id, Todo todo) {
+        return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todo.getTodo(), todo.getModDt(), id);
     }
 
 
@@ -76,12 +74,12 @@ public class TodoRepositoryImpl implements TodoRepository {
             @Override
             public Todo mapRow(ResultSet rs, int rowNum) throws SQLException {
                 return new Todo(
-                        rs.getInt("id"),
-                        rs.getInt("user_id"),
+                        rs.getLong("id"),
+                        rs.getLong("user_id"),
                         rs.getString("todo"),
                         rs.getString("pwd"),
-                        rs.getDate("create_dt"),
-                        rs.getDate("mod_dt")
+                        rs.getTimestamp("create_dt").toLocalDateTime(),
+                        rs.getTimestamp("mod_dt").toLocalDateTime()
                 );
             }
         };

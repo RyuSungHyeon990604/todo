@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,17 +20,19 @@ class UserRepositoryImplTest {
     @Autowired
     private UserRepository userRepository;
 
-    private UserDto mockUser;
+    private User mockUser;
 
     @BeforeEach
     void setUp() {
-        mockUser = new UserDto(0, "Test User", "test@example.com");
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        mockUser = new User("Test User", "test@example.com",null,now.toLocalDateTime());
     }
 
     @Test
     @Transactional
     void testInsertUser() {
-        User result = userRepository.insert(mockUser);
+        Long id = userRepository.insert(mockUser);
+        User result = userRepository.findById(id);
         assertNotNull(result);
         assertEquals(mockUser.getName(), result.getName());
         assertEquals(mockUser.getEmail(), result.getEmail());
@@ -38,7 +41,8 @@ class UserRepositoryImplTest {
     @Test
     @Transactional
     void testFindUserById() {
-        User result = userRepository.insert(mockUser);
+        Long id = userRepository.insert(mockUser);
+        User result = userRepository.findById(id);
         User byId = userRepository.findById(result.getId());
         assertEquals(mockUser.getName(), byId.getName());
         assertEquals(mockUser.getEmail(), byId.getEmail());
@@ -47,7 +51,8 @@ class UserRepositoryImplTest {
     @Test
     @Transactional
     void testUpdateUser() {
-        User result = userRepository.insert(mockUser);
+        Long id = userRepository.insert(mockUser);
+        User result = userRepository.findById(id);
         long userId = result.getId();
         String updatedName = "Updated User";
         String updatedEmail = "updated@example.com";
@@ -57,6 +62,7 @@ class UserRepositoryImplTest {
 
         assertEquals(updatedName, updatedUser.getName());
         assertEquals(updatedEmail, updatedUser.getEmail());
+        assertEquals(result.getCreateDt(), updatedUser.getCreateDt());
     }
 
     @Test

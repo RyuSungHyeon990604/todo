@@ -3,15 +3,17 @@ package com.example.todo.entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
 @AllArgsConstructor
 public class Todo {
-    private long id;
-    private long userId;
+    private Long id;
+    private Long userId;
     private String todo;
     private String pwd;
-    private Date createDt;
-    private Date modDt;
+    private LocalDateTime createDt;
+    private LocalDateTime modDt;
 }
