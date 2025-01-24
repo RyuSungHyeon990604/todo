@@ -24,4 +24,8 @@ public class UserDto {
         this.email = user.getEmail();
         this.modDt = user.getModDt();
     }
+    public UserDto(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
 }
