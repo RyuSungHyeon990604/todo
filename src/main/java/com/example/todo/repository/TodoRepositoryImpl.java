@@ -8,14 +8,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,13 +101,14 @@ public class TodoRepositoryImpl implements TodoRepository {
 
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
         simpleJdbcInsert.withTableName("todo").usingGeneratedKeyColumns("id");
+        LocalDateTime now = LocalDateTime.now();
 
         Map<String, Object> params = new HashMap<>();
         params.put("user_id", todo.getUser().getId());
         params.put("todo", todo.getTodo());
         params.put("pwd", todo.getPwd());
-        params.put("create_dt", todo.getCreateDt());
-        params.put("mod_dt", todo.getModDt());
+        params.put("create_dt", now);
+        params.put("mod_dt", now);
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(params));
         return new Todo(key.longValue(), todo.getUser(), todo.getTodo(), todo.getPwd(), todo.getCreateDt(), todo.getModDt());
@@ -126,7 +126,7 @@ public class TodoRepositoryImpl implements TodoRepository {
         Assert.notNull(todoDto.getTodo(), "todoDto.todo must not be null");
         Assert.notNull(todoDto.getModDt(), "todoDto.mod_dt must not be null");
 
-        return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), todoDto.getModDt(), id);
+        return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now(), id);
     }
 
 

@@ -16,11 +16,9 @@ public class User {
     private String email;
     private LocalDateTime createDt;
     private LocalDateTime  modDt;
-    public User(String name, String email, LocalDateTime  createDt, LocalDateTime  modDt) {
+    public User(String name, String email) {
         this.name = name;
         this.email = email;
-        this.createDt = createDt;
-        this.modDt = modDt;
     }
     public User(UserDto dto){
         this.name = dto.getName();

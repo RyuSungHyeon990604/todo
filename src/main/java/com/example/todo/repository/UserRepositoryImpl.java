@@ -12,7 +12,7 @@ import org.springframework.util.Assert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +30,7 @@ public class UserRepositoryImpl implements UserRepository {
     public User insert(@NonNull User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
         insert.withTableName("users").usingGeneratedKeyColumns("id");
-        Timestamp now = new Timestamp(System.currentTimeMillis());
+        LocalDateTime now = LocalDateTime.now();
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", user.getName());
@@ -40,7 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
 
         Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
 
-        return new User(key.longValue(), user.getName(), user.getEmail(), user.getCreateDt(), user.getModDt());
+        return new User(key.longValue(), user.getName(), user.getEmail(), now, now);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class UserRepositoryImpl implements UserRepository {
         Assert.notNull(user.getName(), "user.name must not be null");
         Assert.notNull(user.getEmail(), "user.email must not be null");
         Assert.notNull(user.getModDt(), "user.modDt must not be null");
-        return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), user.getModDt(), id);
+        return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now(), id);
     }
 
     @Override

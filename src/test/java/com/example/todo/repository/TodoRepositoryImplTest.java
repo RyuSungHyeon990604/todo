@@ -31,7 +31,7 @@ class TodoRepositoryImplTest {
     @Transactional
     void setUp() {
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        user = new User("Test User", "test@example.com", null, now.toLocalDateTime());
+        user = new User("Test User", "test@example.com");
         user = userRepository.insert(user);
 
 

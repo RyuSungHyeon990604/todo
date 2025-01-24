@@ -21,6 +21,5 @@ public class TodoDto {
         this.id = todo.getId();
         this.userName = todo.getUser().getName();
         this.todo = todo.getTodo();
-        this.modDt = todo.getModDt();
     }
 }

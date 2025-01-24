@@ -25,7 +25,7 @@ class UserRepositoryImplTest {
     @BeforeEach
     void setUp() {
         Timestamp now = new Timestamp(System.currentTimeMillis());
-        mockUser = new User("Test User", "test@example.com",now.toLocalDateTime(),now.toLocalDateTime());
+        mockUser = new User("Test User", "test@example.com");
     }
 
     @Test
