@@ -25,9 +25,9 @@ public class TodoSvcImpl implements TodoService {
     }
 
     @Override
-    public List<TodoDto> findAll() {
+    public List<TodoDto> findAll(Long userId, Long page) {
         List<TodoDto> res = new ArrayList<>();
-        List<Todo> all = todoRepo.findAll();
+        List<Todo> all = todoRepo.findAll(userId, page);
 
         //List<Entity> -> List<Dto>
         for (Todo todo : all) {

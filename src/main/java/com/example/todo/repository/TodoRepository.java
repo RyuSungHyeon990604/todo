@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface TodoRepository {
 
-    List<Todo> findAll();
+    List<Todo> findAll(Long userId, Long page);
 
     Todo findById(Long id);
 

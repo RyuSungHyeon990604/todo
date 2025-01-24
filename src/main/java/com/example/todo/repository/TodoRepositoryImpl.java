@@ -23,14 +23,15 @@ import java.util.Map;
 public class TodoRepositoryImpl implements TodoRepository {
 
     private final JdbcTemplate jdbcTemplate;
+    private final int pageSize = 10;
 
     public TodoRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public List<Todo> findAll() {
-        String sql = "select t.id         as todo_id" +
+    public List<Todo> findAll(Long userId, Long page) {
+        String defaultSql = "select t.id         as todo_id" +
                 "          , t.todo       as todo" +
                 "          , t.pwd        as pwd" +
                 "          , t.create_dt  as create_dt" +
@@ -42,8 +43,21 @@ public class TodoRepositoryImpl implements TodoRepository {
                 "          , u.mod_dt     as user_mod_dt" +
                 "       from todo t" +
                 "      inner join users u" +
-                "              on t.user_id = u.id";
-        return jdbcTemplate.query(sql, todoRowMapper());
+                "              on t.user_id = u.id" +
+                "      where 1 = 1";
+        StringBuilder sql = new StringBuilder(defaultSql);
+        if(userId != null) {
+            sql.append("and t.user_id =");
+            sql.append(userId);
+        }
+        sql.append("order by mod_dt desc");
+        if(page != null){
+            sql.append("limit ");
+            sql.append(page*pageSize);
+            sql.append(", ");
+            sql.append(pageSize);
+        }
+        return jdbcTemplate.query(sql.toString(), todoRowMapper());
     }
 
     @Override

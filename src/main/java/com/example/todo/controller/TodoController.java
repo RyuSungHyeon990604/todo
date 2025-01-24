@@ -2,12 +2,15 @@ package com.example.todo.controller;
 
 import com.example.todo.dto.TodoDto;
 import com.example.todo.service.TodoService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/todo")
 public class TodoController {
@@ -18,8 +21,19 @@ public class TodoController {
         this.todoService = todoService;
     }
     @GetMapping("")
-    public ResponseEntity<List<TodoDto>> findAll(){
-        List<TodoDto> all = todoService.findAll();
+    public ResponseEntity<List<TodoDto>> findAll(HttpServletRequest request){
+        String userId = request.getParameter("userId");
+        String page = request.getParameter("page");
+
+        Long userIdValue = null;
+        Long pageValue = null;
+        if(userId != null && !userId.equals("null")){
+            userIdValue = Long.parseLong(userId);
+        }
+        if(page != null && !page.equals("null")){
+            pageValue = Long.parseLong(page);
+        }
+        List<TodoDto> all = todoService.findAll(userIdValue,pageValue);
         return ResponseEntity.ok(all);
     }
 
