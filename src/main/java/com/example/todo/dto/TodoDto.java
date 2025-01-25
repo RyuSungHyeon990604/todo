@@ -2,10 +2,7 @@ package com.example.todo.dto;
 
 import com.example.todo.entity.Todo;
 import lombok.*;
-
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter

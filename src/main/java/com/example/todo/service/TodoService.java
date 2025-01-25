@@ -7,8 +7,8 @@ import java.util.List;
 public interface TodoService {
     List<TodoDto> findAll(Long userId,Long page);
     TodoDto findById(Long id);
-    void deleteById(Long id);
+    int deleteById(Long id);
     TodoDto insert(TodoDto todoDto);
-    void update(Long id, TodoDto todoDto);
+    int update(Long id, TodoDto todoDto);
 
 }

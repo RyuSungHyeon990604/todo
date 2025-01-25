@@ -44,8 +44,8 @@ public class TodoSvcImpl implements TodoService {
     }
 
     @Override
-    public void deleteById(Long id) {
-        int i = todoRepo.deleteById(id);
+    public int deleteById(Long id) {
+        return todoRepo.deleteById(id);
     }
 
     @Override
@@ -63,8 +63,7 @@ public class TodoSvcImpl implements TodoService {
     }
 
     @Override
-    public void update(Long id, TodoDto todoDto) {
-        todoDto.setModDt(LocalDateTime.now());
-        int update = todoRepo.update(id, todoDto);
+    public int update(Long id, TodoDto todoDto) {
+        return todoRepo.update(id, todoDto);
     }
 }
