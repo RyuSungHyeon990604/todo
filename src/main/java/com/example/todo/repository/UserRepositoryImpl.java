@@ -2,7 +2,9 @@ package com.example.todo.repository;
 
 import com.example.todo.dto.UserDto;
 import com.example.todo.entity.User;
+import com.example.todo.exception.DbException;
 import lombok.NonNull;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,7 +31,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User insert(User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
-        insert.withTableName("users").usingGeneratedKeyColumns("id");
+        try {
+            insert.withTableName("users").usingGeneratedKeyColumns("id");
+        } catch (DataAccessException e) {
+            throw new DbException(e.getMessage());
+        }
         LocalDateTime now = LocalDateTime.now();
 
         Map<String, Object> params = new HashMap<>();
@@ -37,21 +43,31 @@ public class UserRepositoryImpl implements UserRepository {
         params.put("email", user.getEmail());
         params.put("create_dt", now);
         params.put("mod_dt", now);
+        try {
+            Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
+            return new User(key.longValue(), user.getName(), user.getEmail(), now, now);
+        } catch (DataAccessException e) {
+            throw new DbException(e.getMessage());
+        }
 
-        Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
-
-        return new User(key.longValue(), user.getName(), user.getEmail(), now, now);
     }
 
     @Override
     public int update(Long id, UserDto user) {
-        return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now(), id);
+        try{
+            return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now(), id);
+        } catch (DataAccessException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
     @Override
     public User findById(Long id) {
-        List<User> res = jdbcTemplate.query("select * from users where id = ?", userMapper(), id);
-        return res.stream().findAny().orElseThrow(()->new RuntimeException("Null"));
+        try {
+            return jdbcTemplate.queryForObject("select * from users where id = ?", userMapper(), id);
+        } catch (DataAccessException e) {
+            throw new DbException(e.getMessage());
+        }
     }
 
 

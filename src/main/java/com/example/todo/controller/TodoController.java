@@ -3,6 +3,7 @@ package com.example.todo.controller;
 import com.example.todo.dto.ResponseTodoDto;
 import com.example.todo.dto.TodoDto;
 import com.example.todo.exception.DbException;
+import com.example.todo.exception.FailToCreateTodoException;
 import com.example.todo.service.TodoService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class TodoController {
         try{
             TodoDto insert = todoService.insert(todoDto);
             return ResponseEntity.status(201).body(new ResponseTodoDto("created", insert));
-        } catch(DbException e){
+        } catch(FailToCreateTodoException e){
             log.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseTodoDto(e.getMessage()));
         }

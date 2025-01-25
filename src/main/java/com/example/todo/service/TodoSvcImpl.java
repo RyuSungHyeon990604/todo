@@ -3,6 +3,9 @@ package com.example.todo.service;
 import com.example.todo.dto.TodoDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
+import com.example.todo.exception.DbException;
+import com.example.todo.exception.FailToCreateTodoException;
+import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +30,14 @@ public class TodoSvcImpl implements TodoService {
     @Override
     public List<TodoDto> findAll(Long userId, Long page) {
         List<TodoDto> res = new ArrayList<>();
-        List<Todo> all = todoRepo.findAll(userId, page);
+        List<Todo> all;
+
+        try {
+            all = todoRepo.findAll(userId, page);
+        } catch (DbException e) {
+            log.error(e.getMessage(),e);
+            throw new TodoNotFoundException("TodoNotFoundException");
+        }
 
         //List<Entity> -> List<Dto>
         for (Todo todo : all) {
@@ -52,10 +62,24 @@ public class TodoSvcImpl implements TodoService {
     @Transactional
     public TodoDto insert(TodoDto todoDto) {
         //해당 사용자가 존재하면 insert
-        User user = userRepo.findById(todoDto.getUserId());
-        Todo todo = new Todo(user,todoDto);
+        User user;
 
-        Todo insert = todoRepo.insert(todo);
+        try {
+            user = userRepo.findById(todoDto.getUserId());
+        } catch (DbException e) {
+            log.error(e.getMessage(),e);
+            throw new FailToCreateTodoException("User with id " + todoDto.getUserId() + " not found");
+        }
+
+        Todo todo = new Todo(user,todoDto);
+        Todo insert;
+        try {
+            insert = todoRepo.insert(todo);
+        } catch (DbException e) {
+            log.error(e.getMessage(),e);
+            throw new FailToCreateTodoException("fail to create todo");
+        }
+
 
         TodoDto res = new TodoDto(insert);
 

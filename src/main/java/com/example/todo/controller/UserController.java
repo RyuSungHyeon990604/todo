@@ -1,7 +1,6 @@
 package com.example.todo.controller;
 
 import com.example.todo.dto.UserDto;
-import com.example.todo.entity.User;
 import com.example.todo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
