@@ -30,4 +30,8 @@ public class UserDto {
         this.name = name;
         this.email = email;
     }
+    public UserDto(UserCreateDto userCreateDto) {
+        this.name = userCreateDto.getName();
+        this.email = userCreateDto.getEmail();
+    }
 }

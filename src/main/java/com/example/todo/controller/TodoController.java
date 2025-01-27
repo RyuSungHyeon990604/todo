@@ -1,16 +1,17 @@
 package com.example.todo.controller;
 
+import com.example.todo.dto.TodoCreateRequestDto;
 import com.example.todo.dto.ResponseTodoDto;
 import com.example.todo.dto.TodoDto;
+import com.example.todo.dto.TodoUpdateRequestDto;
 import com.example.todo.exception.DbException;
 import com.example.todo.exception.FailToCreateTodoException;
 import com.example.todo.service.TodoService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,13 +26,14 @@ public class TodoController {
     public TodoController(TodoService todoService) {
         this.todoService = todoService;
     }
+
     @GetMapping("")
     public ResponseEntity<ResponseTodoDto> findAll(HttpServletRequest request){
         String userId = request.getParameter("userId");
         String page = request.getParameter("page");
 
         Long userIdValue = null;
-        Long pageValue = null;
+        Long pageValue = 1L;
         if(userId != null && !userId.equals("null")){
             userIdValue = Long.parseLong(userId);
         }
@@ -50,54 +52,32 @@ public class TodoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ResponseTodoDto> findById(@PathVariable Long id){
-        try {
-            TodoDto byId = todoService.findById(id);
-            return ResponseEntity.status(200).body(new ResponseTodoDto("success", byId));
-        } catch (DbException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseTodoDto(e.getMessage()));
-        }
-
+        TodoDto byId = todoService.findById(id);
+        return ResponseEntity.status(200).body(new ResponseTodoDto("success", byId));
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseTodoDto> create(@RequestBody TodoDto todoDto){
-        try{
-            TodoDto insert = todoService.insert(todoDto);
-            return ResponseEntity.status(201).body(new ResponseTodoDto("created", insert));
-        } catch(FailToCreateTodoException e){
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseTodoDto(e.getMessage()));
-        }
-
+    public ResponseEntity<ResponseTodoDto> create(@RequestBody @Valid TodoCreateRequestDto createDto){
+        TodoDto insert = todoService.insert(new TodoDto(createDto));
+        return ResponseEntity.status(201).body(new ResponseTodoDto("created", insert));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseTodoDto> update(@PathVariable Long id, @RequestBody TodoDto todoDto){
-        try {
-            int updated = todoService.update(id, todoDto);
-            if(updated == 0){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseTodoDto("0 rows updated"));
-            }
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseTodoDto("success", todoDto));
-        } catch (DbException e){
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseTodoDto(e.getMessage()));
+    public ResponseEntity<ResponseTodoDto> update(@PathVariable Long id, @RequestBody @Valid TodoUpdateRequestDto updateDto){
+        int updated = todoService.update(id, new TodoDto(updateDto));
+        if(updated == 0){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseTodoDto("0 rows updated"));
         }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseTodoDto("success"));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseTodoDto> delete(@PathVariable Long todoId){
-        try {
-            int deleted = todoService.deleteById(todoId);
-            if(deleted == 0){
-                return ResponseEntity.status(404).build();
-            }
-            return ResponseEntity.status(200).body(new ResponseTodoDto("success"));
-        } catch (DbException e){
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseTodoDto(e.getMessage()));
+        int deleted = todoService.deleteById(todoId);
+        if(deleted == 0){
+            return ResponseEntity.status(404).build();
         }
+        return ResponseEntity.status(200).body(new ResponseTodoDto("success"));
     }
 
 }

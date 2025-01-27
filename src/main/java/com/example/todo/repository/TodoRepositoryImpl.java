@@ -94,7 +94,7 @@ public class TodoRepositoryImpl implements TodoRepository {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
 
         try{
-            simpleJdbcInsert.withTableName("todo1").usingGeneratedKeyColumns("id");
+            simpleJdbcInsert.withTableName("todo").usingGeneratedKeyColumns("id");
         } catch (DataAccessException e) {
             throw new DbException(e.getMessage());
         }

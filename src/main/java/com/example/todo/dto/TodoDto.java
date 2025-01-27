@@ -5,9 +5,6 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class TodoDto {
     private Long id;
     private Long userId;
@@ -21,5 +18,15 @@ public class TodoDto {
         this.userId = todo.getUser().getId();
         this.todo = todo.getTodo();
         this.modDt = todo.getModDt();
+    }
+
+    public TodoDto(TodoUpdateRequestDto updateRequestDto) {
+        this.todo = updateRequestDto.getTodo();
+    }
+
+    public TodoDto(TodoCreateRequestDto createRequestDto){
+        this.todo = createRequestDto.getTodo();
+        this.userId = createRequestDto.getUserId();
+        this.pwd = createRequestDto.getPwd();
     }
 }
