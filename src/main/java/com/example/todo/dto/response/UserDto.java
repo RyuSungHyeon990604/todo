@@ -1,6 +1,6 @@
 package com.example.todo.dto.response;
 
-import com.example.todo.dto.request.UserCreateDto;
+import com.example.todo.dto.request.UserCreateRequestDto;
 import com.example.todo.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,8 +30,8 @@ public class UserDto {
         this.name = name;
         this.email = email;
     }
-    public UserDto(UserCreateDto userCreateDto) {
-        this.name = userCreateDto.getName();
-        this.email = userCreateDto.getEmail();
+    public UserDto(UserCreateRequestDto userCreateRequestDto) {
+        this.name = userCreateRequestDto.getName();
+        this.email = userCreateRequestDto.getEmail();
     }
 }

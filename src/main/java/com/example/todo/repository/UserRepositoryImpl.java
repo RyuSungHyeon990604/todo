@@ -1,8 +1,7 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.response.UserDto;
+import com.example.todo.dto.request.UserUpdateRequestDto;
 import com.example.todo.entity.User;
-import com.example.todo.exception.DuplicateKeyException;
 import com.example.todo.exception.UserNotFoundException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,10 +28,6 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User insert(User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
-        if(!isUnique("email", user.getEmail())) {
-            throw new DuplicateKeyException("이미 사용중인 이메일입니다.");
-        }
-
         insert.withTableName("users").usingGeneratedKeyColumns("id");
         LocalDateTime now = LocalDateTime.now().withNano(0);
 
@@ -47,8 +42,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public int update(Long id, UserDto user) {
-        return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now(), id);
+    public int update(Long id, UserUpdateRequestDto user) {
+        return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now().withNano(0), id);
     }
 
     @Override
@@ -76,12 +71,13 @@ public class UserRepositoryImpl implements UserRepository {
         };
     }
 
-    private boolean isUnique(String column, String value) {
+    @Override
+    public boolean isDuplicate(String columnName, String value) {
         String sql = "select count(*) " +
                 "       from users " +
                 "      where 1 = 1" +
-                "        and " + column + " = ?";
+                "        and " + columnName + " = ?";
         int i = jdbcTemplate.queryForObject(sql, Integer.class,value);
-        return i == 0;
+        return i > 0;
     }
 }

@@ -1,8 +1,10 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.response.UserDto;
+import com.example.todo.dto.request.UserCreateRequestDto;
+import com.example.todo.dto.request.UserUpdateRequestDto;
+import com.example.todo.dto.response.ResponseUserDto;
 
 public interface UserService {
-    UserDto addUser(UserDto userDto);
-    int updateUser(Long id, UserDto userDto);
+    ResponseUserDto addUser(UserCreateRequestDto userDto);
+    int updateUser(Long id, UserUpdateRequestDto userDto);
 }
