@@ -3,7 +3,9 @@ package com.example.todo.repository;
 import com.example.todo.dto.response.UserDto;
 import com.example.todo.entity.User;
 import com.example.todo.exception.DbException;
+import com.example.todo.exception.UserNotFoundException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -28,42 +30,31 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User insert(User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
-        try {
-            insert.withTableName("users").usingGeneratedKeyColumns("id");
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
-        LocalDateTime now = LocalDateTime.now();
+
+        insert.withTableName("users").usingGeneratedKeyColumns("id");
+        LocalDateTime now = LocalDateTime.now().withNano(0);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", user.getName());
         params.put("email", user.getEmail());
         params.put("create_dt", now);
         params.put("mod_dt", now);
-        try {
-            Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
-            return new User(key.longValue(), user.getName(), user.getEmail(), now, now);
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
 
+        Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
+        return new User(key.longValue(), user.getName(), user.getEmail(), now, now);
     }
 
     @Override
     public int update(Long id, UserDto user) {
-        try{
-            return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now(), id);
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
+        return jdbcTemplate.update("update users set name = ?, email = ?, mod_dt = ? where id = ?", user.getName(), user.getEmail(), LocalDateTime.now(), id);
     }
 
     @Override
     public User findById(Long id) {
         try {
             return jdbcTemplate.queryForObject("select * from users where id = ?", userMapper(), id);
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
+        } catch (EmptyResultDataAccessException e) {
+            throw new UserNotFoundException("사용자" + id + "가 존재하지않습니다.");
         }
     }
 

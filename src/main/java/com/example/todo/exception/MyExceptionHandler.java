@@ -31,16 +31,16 @@ public class MyExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    @ExceptionHandler(TodoNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> todoNotFoundException(TodoNotFoundException e){
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> userNotFoundException(UserNotFoundException e){
         ExceptionResponse response = new ExceptionResponse(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }
 
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<ExceptionResponse> dbException(DataAccessException e){
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> todoNotFoundException(TodoNotFoundException e){
         ExceptionResponse response = new ExceptionResponse(e.getMessage());
-        return ResponseEntity.internalServerError().body(response);
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(InvalidPasswordException.class)

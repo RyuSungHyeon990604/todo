@@ -11,6 +11,7 @@ import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +36,9 @@ public class TodoSvcImpl implements TodoService {
 
         try {
             all = todoRepo.findAll(userId, page);
-        } catch (DataAccessException e) {
+        } catch (EmptyResultDataAccessException e) {
             log.error(e.getMessage(),e);
-            throw new TodoNotFoundException("일정을 조회할수없습니다.");
+            throw new TodoNotFoundException("등록된 일정이 없습니다.");
         }
 
         //List<Entity> -> List<Dto>
@@ -50,16 +51,23 @@ public class TodoSvcImpl implements TodoService {
 
     @Override
     public ResponseTodoDto findById(Long id) {
-        Todo res = todoRepo.findById(id);
-        return new ResponseTodoDto(res);
+        try {
+            Todo res = todoRepo.findById(id);
+            return new ResponseTodoDto(res);
+        } catch (EmptyResultDataAccessException e) {
+            log.error(e.getMessage(),e);
+            throw new TodoNotFoundException("일정 "+ id + " 이 존재하지않습니다.");
+        }
+
     }
 
     @Override
+    @Transactional
     public int deleteById(Long id, TodoDeleteRequestDto requestDto) {
         Todo byId = todoRepo.findById(id);
 
         if(byId.getUser().getId().equals(requestDto.getUserId())) {
-            throw new AccessDeniedException("작성자 아님");
+            throw new AccessDeniedException("일정을 등록한 사용자가 아닙니다.");
         }
         if(!byId.getPwd().equals(requestDto.getPwd())) {
             throw new InvalidPasswordException();
@@ -72,14 +80,7 @@ public class TodoSvcImpl implements TodoService {
     @Transactional
     public ResponseTodoDto insert(TodoCreateRequestDto todoDto) {
         //해당 사용자가 존재하면 insert
-        User user;
-
-        try {
-            user = userRepo.findById(todoDto.getUserId());
-        } catch (DataAccessException e) {
-            log.error(e.getMessage(),e);
-            throw new FailToCreateTodoException("User with id " + todoDto.getUserId() + " not found");
-        }
+        User user = userRepo.findById(todoDto.getUserId());
 
         Todo todo = todoDto.toEntity(user);
         Todo insert;
@@ -87,7 +88,7 @@ public class TodoSvcImpl implements TodoService {
             insert = todoRepo.insert(todo);
         } catch (DataAccessException e) {
             log.error(e.getMessage(),e);
-            throw new FailToCreateTodoException("fail to create todo");
+            throw new FailToCreateTodoException("일정등록 실패");
         }
 
 
@@ -99,10 +100,10 @@ public class TodoSvcImpl implements TodoService {
     @Override
     @Transactional
     public int update(Long id, TodoUpdateRequestDto todoDto) {
-        Todo byId = todoRepo.findById(id);
+        ResponseTodoDto byId = findById(id);
 
-        if(!byId.getUser().getId().equals(todoDto.getUserId())) {
-            throw new AccessDeniedException("작성자 아님");
+        if(!byId.getUserId().equals(todoDto.getUserId())) {
+            throw new AccessDeniedException("일정을 등록한 사용자가 아닙니다.");
         }
         if(!byId.getPwd().equals(todoDto.getPwd())) {
             throw new InvalidPasswordException();
