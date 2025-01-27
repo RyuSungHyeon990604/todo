@@ -1,11 +1,9 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.TodoDto;
+import com.example.todo.dto.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TodoRepository {
 
@@ -17,6 +15,6 @@ public interface TodoRepository {
 
     int deleteById(Long id);
 
-    int update(Long id, TodoDto todoDto);
+    int update(Long id, TodoUpdateRequestDto todoDto);
 
 }

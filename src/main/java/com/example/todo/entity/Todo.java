@@ -1,15 +1,13 @@
 package com.example.todo.entity;
 
-import com.example.todo.dto.TodoDto;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class Todo {
     private Long id;
     private User user;
@@ -18,9 +16,12 @@ public class Todo {
     private LocalDateTime createDt;
     private LocalDateTime modDt;
 
-    public Todo(User user, TodoDto todoDto) {
+    @Builder
+    public Todo(Long id, User user, String todo, String pwd, LocalDateTime createDt, LocalDateTime modDt) {
         this.user = user;
-        this.todo = todoDto.getTodo();
-        this.pwd = todoDto.getPwd();
+        this.todo = todo;
+        this.pwd = pwd;
+        this.createDt = createDt;
+        this.modDt = modDt;
     }
 }

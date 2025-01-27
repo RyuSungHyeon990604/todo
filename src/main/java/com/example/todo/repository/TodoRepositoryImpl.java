@@ -1,18 +1,15 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.TodoDto;
+import com.example.todo.dto.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import com.example.todo.exception.DbException;
-import lombok.NonNull;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -126,7 +123,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public int update(Long id, TodoDto todoDto) {
+    public int update(Long id, TodoUpdateRequestDto todoDto) {
         try {
             return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now(), id);
         } catch (DataAccessException e) {

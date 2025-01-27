@@ -1,6 +1,8 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.TodoDto;
+import com.example.todo.dto.ResponseTodoDto;
+import com.example.todo.dto.TodoCreateRequestDto;
+import com.example.todo.dto.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import com.example.todo.repository.TodoRepository;
@@ -46,7 +48,7 @@ class TodoSvcImplTest {
         when(todoRepo.findAll(null,null)).thenReturn(Arrays.asList(todo1, todo2));
 
         // when
-        List<TodoDto> result = todoSvc.findAll(null,null);
+        List<ResponseTodoDto> result = todoSvc.findAll(null, null);
 
         // then
         assertThat(result).hasSize(2);
@@ -63,7 +65,7 @@ class TodoSvcImplTest {
         when(todoRepo.findById(id)).thenReturn(todo2);
 
         // when
-        TodoDto result = todoSvc.findById(id);
+        ResponseTodoDto result = todoSvc.findById(id);
 
         // then
         assertThat(result.getTodo()).isEqualTo("Test Todo");
@@ -87,7 +89,7 @@ class TodoSvcImplTest {
     void insert_ShouldInsertAndReturnTodoDto() {
         // given
         Long userId = 1L;
-        TodoDto todoDto = new TodoDto();
+        TodoCreateRequestDto todoDto = new TodoCreateRequestDto();
         todoDto.setTodo("Todo 1");
         todoDto.setUserId(userId);
         User user = new User(userId, "User 1", "user1@example.com", LocalDateTime.now(), LocalDateTime.now());
@@ -98,7 +100,7 @@ class TodoSvcImplTest {
         when(todoRepo.insert(any(Todo.class))).thenReturn(insertedTodo);
 
         // when
-        TodoDto result = todoSvc.insert(todoDto);
+        ResponseTodoDto result = todoSvc.insert(todoDto);
 
         // then
         assertThat(result.getTodo()).isEqualTo("New Todo");
@@ -110,7 +112,7 @@ class TodoSvcImplTest {
     void update_ShouldUpdateTodo() {
         // given
         Long id = 1L;
-        TodoDto todoDto = new TodoDto();
+        TodoUpdateRequestDto todoDto = new TodoUpdateRequestDto();
         todoDto.setTodo("Update Todo");
 
         when(todoRepo.update(id, todoDto)).thenReturn(1);
@@ -126,7 +128,7 @@ class TodoSvcImplTest {
     void insert_ShouldThrowExceptionWhenUserNotFound() {
         // given
         Long userId = 1L;
-        TodoDto todoDto = new TodoDto();
+        TodoCreateRequestDto todoDto = new TodoCreateRequestDto();
         todoDto.setTodo("Insert Todo");
         todoDto.setUserId(userId);
         when(userRepo.findById(any())).thenThrow(new RuntimeException("User not found"));

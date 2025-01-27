@@ -1,5 +1,7 @@
 package com.example.todo.dto;
 
+import com.example.todo.entity.Todo;
+import com.example.todo.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -8,7 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 @Getter
+@Setter
 @NoArgsConstructor
 public class TodoCreateRequestDto {
     @NotNull
@@ -18,4 +23,12 @@ public class TodoCreateRequestDto {
     private String todo;
     @NotNull
     private String pwd;
+
+    public Todo toEntity(User user){
+        return Todo.builder()
+                .user(user)
+                .todo(todo)
+                .pwd(pwd)
+                .build();
+    }
 }

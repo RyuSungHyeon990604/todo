@@ -1,6 +1,8 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.TodoDto;
+import com.example.todo.dto.ResponseTodoDto;
+import com.example.todo.dto.TodoCreateRequestDto;
+import com.example.todo.dto.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import com.example.todo.exception.DbException;
@@ -28,8 +30,8 @@ public class TodoSvcImpl implements TodoService {
     }
 
     @Override
-    public List<TodoDto> findAll(Long userId, Long page) {
-        List<TodoDto> res = new ArrayList<>();
+    public List<ResponseTodoDto> findAll(Long userId, Long page) {
+        List<ResponseTodoDto> res = new ArrayList<>();
         List<Todo> all;
 
         try {
@@ -41,16 +43,16 @@ public class TodoSvcImpl implements TodoService {
 
         //List<Entity> -> List<Dto>
         for (Todo todo : all) {
-            res.add(new TodoDto(todo));
+            res.add(new ResponseTodoDto(todo));
         }
 
         return res;
     }
 
     @Override
-    public TodoDto findById(Long id) {
+    public ResponseTodoDto findById(Long id) {
         Todo res = todoRepo.findById(id);
-        return new TodoDto(res);
+        return new ResponseTodoDto(res);
     }
 
     @Override
@@ -60,7 +62,7 @@ public class TodoSvcImpl implements TodoService {
 
     @Override
     @Transactional
-    public TodoDto insert(TodoDto todoDto) {
+    public ResponseTodoDto insert(TodoCreateRequestDto todoDto) {
         //해당 사용자가 존재하면 insert
         User user;
 
@@ -71,7 +73,7 @@ public class TodoSvcImpl implements TodoService {
             throw new FailToCreateTodoException("User with id " + todoDto.getUserId() + " not found");
         }
 
-        Todo todo = new Todo(user,todoDto);
+        Todo todo = todoDto.toEntity(user);
         Todo insert;
         try {
             insert = todoRepo.insert(todo);
@@ -81,13 +83,13 @@ public class TodoSvcImpl implements TodoService {
         }
 
 
-        TodoDto res = new TodoDto(insert);
+        ResponseTodoDto res = new ResponseTodoDto(insert);
 
         return res;
     }
 
     @Override
-    public int update(Long id, TodoDto todoDto) {
+    public int update(Long id, TodoUpdateRequestDto todoDto) {
         return todoRepo.update(id, todoDto);
     }
 }

@@ -1,9 +1,6 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.TodoCreateRequestDto;
-import com.example.todo.dto.ResponseTodoDto;
-import com.example.todo.dto.TodoDto;
-import com.example.todo.dto.TodoUpdateRequestDto;
+import com.example.todo.dto.*;
 import com.example.todo.exception.DbException;
 import com.example.todo.exception.FailToCreateTodoException;
 import com.example.todo.service.TodoService;
@@ -28,7 +25,7 @@ public class TodoController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ResponseTodoDto> findAll(HttpServletRequest request){
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> findAll(HttpServletRequest request){
         String userId = request.getParameter("userId");
         String page = request.getParameter("page");
 
@@ -40,44 +37,38 @@ public class TodoController {
         if(page != null && !page.equals("null")){
             pageValue = Long.parseLong(page);
         }
-        try {
-            List<TodoDto> all = todoService.findAll(userIdValue,pageValue);
-            return ResponseEntity.status(200).body(new ResponseTodoDto("success", all));
-        } catch (DbException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseTodoDto(e.getMessage()));
-        }
-
+        List<ResponseTodoDto> all = todoService.findAll(userIdValue,pageValue);
+        return ResponseEntity.status(200).body(new ResponseDto<ResponseTodoDto>(all,"success"));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseTodoDto> findById(@PathVariable Long id){
-        TodoDto byId = todoService.findById(id);
-        return ResponseEntity.status(200).body(new ResponseTodoDto("success", byId));
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> findById(@PathVariable Long id){
+        ResponseTodoDto byId = todoService.findById(id);
+        return ResponseEntity.status(200).body(new ResponseDto<>(byId, "success"));
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseTodoDto> create(@RequestBody @Valid TodoCreateRequestDto createDto){
-        TodoDto insert = todoService.insert(new TodoDto(createDto));
-        return ResponseEntity.status(201).body(new ResponseTodoDto("created", insert));
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> create(@RequestBody @Valid TodoCreateRequestDto createDto){
+        ResponseTodoDto insert = todoService.insert(createDto);
+        return ResponseEntity.status(201).body(new ResponseDto<>(insert, "created"));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseTodoDto> update(@PathVariable Long id, @RequestBody @Valid TodoUpdateRequestDto updateDto){
-        int updated = todoService.update(id, new TodoDto(updateDto));
-        if(updated == 0){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseTodoDto("0 rows updated"));
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseTodoDto("success"));
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> update(@PathVariable Long id, @RequestBody @Valid TodoUpdateRequestDto updateDto){
+        int updated = todoService.update(id, updateDto);
+//        if(updated == 0){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseDto<>("0 rows updated"));
+//        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto<>("success"));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseTodoDto> delete(@PathVariable Long todoId){
-        int deleted = todoService.deleteById(todoId);
-        if(deleted == 0){
-            return ResponseEntity.status(404).build();
-        }
-        return ResponseEntity.status(200).body(new ResponseTodoDto("success"));
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> delete(@PathVariable Long id){
+        int deleted = todoService.deleteById(id);
+//        if(deleted == 0){
+//            return ResponseEntity.status(404).build();
+//        }
+        return ResponseEntity.status(200).body(new ResponseDto<>("success"));
     }
 
 }

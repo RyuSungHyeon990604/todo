@@ -1,6 +1,6 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.TodoDto;
+import com.example.todo.dto.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,9 +90,9 @@ class TodoRepositoryImplTest {
         Thread.sleep(1000);
         Timestamp now2 = new Timestamp(System.currentTimeMillis());
         String updatedStr = "업데이트된 할일";
-        TodoDto todoDto = new TodoDto();
+        TodoUpdateRequestDto todoDto = new TodoUpdateRequestDto();
         todoDto.setTodo(updatedStr);
-        todoDto.setModDt(now2.toLocalDateTime());
+
 
         int rowsAffected = todoRepository.update(find.getId(), todoDto);
         Todo updated = todoRepository.findById(find.getId());
