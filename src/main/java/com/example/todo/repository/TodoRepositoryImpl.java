@@ -48,12 +48,9 @@ public class TodoRepositoryImpl implements TodoRepository {
             sql.append(userId);
         }
         sql.append(" order by mod_dt desc");
-        if(page != null){
-            sql.append("limit ");
-            sql.append(page*pageSize);
-            sql.append(", ");
-            sql.append(pageSize);
-        }
+        //페이지를 설정하지않았다면 1페이지 조회
+        page = page == null ? 1 : page;
+        sql.append("limit ").append(page * pageSize).append(", ").append(pageSize);
 
         return jdbcTemplate.query(sql.toString(), todoRowMapper());
 
