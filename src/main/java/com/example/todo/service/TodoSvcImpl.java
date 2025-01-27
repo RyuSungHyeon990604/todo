@@ -1,8 +1,8 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.ResponseTodoDto;
-import com.example.todo.dto.TodoCreateRequestDto;
-import com.example.todo.dto.TodoUpdateRequestDto;
+import com.example.todo.dto.response.ResponseTodoDto;
+import com.example.todo.dto.request.TodoCreateRequestDto;
+import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import com.example.todo.exception.DbException;
@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

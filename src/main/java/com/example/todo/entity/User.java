@@ -1,12 +1,10 @@
 package com.example.todo.entity;
 
-import com.example.todo.dto.UserDto;
+import com.example.todo.dto.response.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @AllArgsConstructor

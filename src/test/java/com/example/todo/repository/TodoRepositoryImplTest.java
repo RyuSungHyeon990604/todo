@@ -1,6 +1,6 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.TodoUpdateRequestDto;
+import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import org.junit.jupiter.api.BeforeEach;

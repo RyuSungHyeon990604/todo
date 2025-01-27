@@ -1,14 +1,10 @@
-package com.example.todo.dto;
+package com.example.todo.dto.response;
 
 
 import com.example.todo.entity.Todo;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 public class ResponseTodoDto {

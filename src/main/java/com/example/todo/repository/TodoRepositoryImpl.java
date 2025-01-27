@@ -1,6 +1,6 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.TodoUpdateRequestDto;
+import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import com.example.todo.exception.DbException;
@@ -96,7 +96,7 @@ public class TodoRepositoryImpl implements TodoRepository {
             throw new DbException(e.getMessage());
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now().withNano(0);
         Map<String, Object> params = new HashMap<>();
         params.put("user_id", todo.getUser().getId());
         params.put("todo", todo.getTodo());
@@ -106,7 +106,7 @@ public class TodoRepositoryImpl implements TodoRepository {
 
         try{
             Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(params));
-            return new Todo(key.longValue(), todo.getUser(), todo.getTodo(), todo.getPwd(), todo.getCreateDt(), todo.getModDt());
+            return new Todo(key.longValue(), todo.getUser(), todo.getTodo(), todo.getPwd(), now, now);
         } catch (DataAccessException e) {
             throw new DbException(e.getMessage());
         }
@@ -125,7 +125,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     @Override
     public int update(Long id, TodoUpdateRequestDto todoDto) {
         try {
-            return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now(), id);
+            return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now().withNano(0), id);
         } catch (DataAccessException e) {
             throw new DbException(e.getMessage());
         }

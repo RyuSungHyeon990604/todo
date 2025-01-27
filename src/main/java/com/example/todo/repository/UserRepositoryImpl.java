@@ -1,22 +1,19 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.UserDto;
+import com.example.todo.dto.response.UserDto;
 import com.example.todo.entity.User;
 import com.example.todo.exception.DbException;
-import lombok.NonNull;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Repository

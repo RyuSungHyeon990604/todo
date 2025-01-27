@@ -1,7 +1,7 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.UserCreateDto;
-import com.example.todo.dto.UserDto;
+import com.example.todo.dto.request.UserCreateDto;
+import com.example.todo.dto.response.UserDto;
 import com.example.todo.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

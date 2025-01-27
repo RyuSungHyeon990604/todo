@@ -18,6 +18,7 @@ public class Todo {
 
     @Builder
     public Todo(Long id, User user, String todo, String pwd, LocalDateTime createDt, LocalDateTime modDt) {
+        this.id = id;
         this.user = user;
         this.todo = todo;
         this.pwd = pwd;

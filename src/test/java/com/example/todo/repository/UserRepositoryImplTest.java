@@ -1,6 +1,6 @@
 package com.example.todo.repository;
 
-import com.example.todo.dto.UserDto;
+import com.example.todo.dto.response.UserDto;
 import com.example.todo.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 

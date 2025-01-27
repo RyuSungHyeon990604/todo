@@ -1,6 +1,6 @@
 package com.example.todo.service;
 
-import com.example.todo.dto.UserDto;
+import com.example.todo.dto.response.UserDto;
 import com.example.todo.entity.User;
 import com.example.todo.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
