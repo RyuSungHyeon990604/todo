@@ -5,6 +5,7 @@ import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
 import com.example.todo.exception.DbException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -56,11 +57,9 @@ public class TodoRepositoryImpl implements TodoRepository {
             sql.append(", ");
             sql.append(pageSize);
         }
-        try{
-            return jdbcTemplate.query(sql.toString(), todoRowMapper());
-        } catch(DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
+
+        return jdbcTemplate.query(sql.toString(), todoRowMapper());
+
     }
 
     @Override
@@ -79,22 +78,16 @@ public class TodoRepositoryImpl implements TodoRepository {
                 "      inner join users u" +
                 "              on t.user_id = u.id" +
                 "      where t.id = ?";
-        try {
-            return jdbcTemplate.queryForObject(sql, todoRowMapper(), id);
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
+
+        return jdbcTemplate.queryForObject(sql, todoRowMapper(), id);
+
     }
 
     @Override
     public Todo insert(Todo todo) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
 
-        try{
-            simpleJdbcInsert.withTableName("todo").usingGeneratedKeyColumns("id");
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
+        simpleJdbcInsert.withTableName("todo").usingGeneratedKeyColumns("id");
 
         LocalDateTime now = LocalDateTime.now().withNano(0);
         Map<String, Object> params = new HashMap<>();
@@ -104,31 +97,22 @@ public class TodoRepositoryImpl implements TodoRepository {
         params.put("create_dt", now);
         params.put("mod_dt", now);
 
-        try{
-            Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(params));
-            return new Todo(key.longValue(), todo.getUser(), todo.getTodo(), todo.getPwd(), now, now);
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
+        Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(params));
+        return new Todo(key.longValue(), todo.getUser(), todo.getTodo(), todo.getPwd(), now, now);
+
 
     }
 
     @Override
     public int deleteById(Long id) {
-        try {
-            return jdbcTemplate.update("delete from todo where id = ?", id);
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
+
+        return jdbcTemplate.update("delete from todo where id = ?", id);
+
     }
 
     @Override
     public int update(Long id, TodoUpdateRequestDto todoDto) {
-        try {
-            return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now().withNano(0), id);
-        } catch (DataAccessException e) {
-            throw new DbException(e.getMessage());
-        }
+        return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now().withNano(0), id);
     }
 
 

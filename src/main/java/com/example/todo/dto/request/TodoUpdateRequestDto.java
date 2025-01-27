@@ -14,6 +14,10 @@ public class TodoUpdateRequestDto {
     @NotNull
     @Size(max = 200)
     String todo;
+    @NotNull
+    String pwd;
+    @NotNull
+    Long userId;
 
     public Todo toEntity(){
         return Todo.builder().todo(todo).build();

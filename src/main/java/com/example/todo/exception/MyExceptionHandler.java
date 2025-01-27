@@ -1,19 +1,17 @@
 package com.example.todo.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.method.MethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class ValidExceptionHandler {
+public class MyExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> methodArgumentNotValidException(MethodArgumentNotValidException e){
@@ -33,9 +31,27 @@ public class ValidExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    @ExceptionHandler(DbException.class)
-    public ResponseEntity<ExceptionResponse> dbException(DbException e){
+    @ExceptionHandler(TodoNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> todoNotFoundException(TodoNotFoundException e){
+        ExceptionResponse response = new ExceptionResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ExceptionResponse> dbException(DataAccessException e){
         ExceptionResponse response = new ExceptionResponse(e.getMessage());
         return ResponseEntity.internalServerError().body(response);
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ExceptionResponse> invalidPasswordException(InvalidPasswordException e){
+        ExceptionResponse response = new ExceptionResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> accessDeniedException(AccessDeniedException e){
+        ExceptionResponse response = new ExceptionResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
     }
 }
