@@ -10,6 +10,8 @@ import com.example.todo.exception.*;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class TodoSvcImpl implements TodoService {
     private final TodoRepository todoRepo;
     private final UserRepository userRepo;
 
-    public TodoSvcImpl(TodoRepository todoRepo, UserRepository userRepo) {
+    public TodoSvcImpl(@Qualifier("namedParameterJdbcTodoRepositoryImpl") TodoRepository todoRepo, UserRepository userRepo) {
         this.todoRepo = todoRepo;
         this.userRepo = userRepo;
     }
