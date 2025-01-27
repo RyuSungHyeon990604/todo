@@ -54,4 +54,10 @@ public class MyExceptionHandler {
         ExceptionResponse response = new ExceptionResponse(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<ExceptionResponse> duplicateKeyException(DuplicateKeyException e){
+        ExceptionResponse response = new ExceptionResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
 }
