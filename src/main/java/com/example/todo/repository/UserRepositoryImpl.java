@@ -2,9 +2,7 @@ package com.example.todo.repository;
 
 import com.example.todo.dto.response.UserDto;
 import com.example.todo.entity.User;
-import com.example.todo.exception.DbException;
 import com.example.todo.exception.UserNotFoundException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
