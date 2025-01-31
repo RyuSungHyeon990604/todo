@@ -34,14 +34,7 @@ public class TodoSvcImpl implements TodoService {
     @Override
     public List<ResponseTodoDto> findAll(Long userId, Long page) {
         List<ResponseTodoDto> res = new ArrayList<>();
-        List<Todo> all;
-
-        try {
-            all = todoRepo.findAll(userId, page);
-        } catch (EmptyResultDataAccessException e) {
-            log.error(e.getMessage(),e);
-            throw new TodoNotFoundException("등록된 일정이 없습니다.");
-        }
+        List<Todo> all = todoRepo.findAll(userId, page);
 
         //List<Entity> -> List<Dto>
         for (Todo todo : all) {

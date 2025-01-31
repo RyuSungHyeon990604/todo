@@ -1,12 +1,15 @@
 package com.example.todo.exception;
 
-import lombok.AllArgsConstructor;
+import com.example.todo.code.ErrorCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+
 @Getter
-@NoArgsConstructor
 public class ExceptionResponse {
     String message;
+    int code;
+    public ExceptionResponse(String message, ErrorCode code) {
+        this.message = message;
+        this.code = code.getCode();
+    }
 }
