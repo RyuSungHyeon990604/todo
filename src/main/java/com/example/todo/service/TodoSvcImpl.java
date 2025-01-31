@@ -1,5 +1,6 @@
 package com.example.todo.service;
 
+import com.example.todo.code.ErrorCode;
 import com.example.todo.dto.request.TodoDeleteRequestDto;
 import com.example.todo.dto.response.ResponseTodoDto;
 import com.example.todo.dto.request.TodoCreateRequestDto;
@@ -47,7 +48,7 @@ public class TodoSvcImpl implements TodoService {
     @Override
     public ResponseTodoDto findById(Long todoId) {
 
-        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException("일정 "+todoId + " 을 찾을수 없습니다."));
+        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException());
 
         return new ResponseTodoDto(byId);
     }
@@ -55,10 +56,10 @@ public class TodoSvcImpl implements TodoService {
     @Override
     @Transactional
     public int deleteById(Long userId, Long todoId, TodoDeleteRequestDto requestDto) {
-        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException("일정 "+todoId + " 을 찾을수 없습니다."));
+        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException());
 
         if(!byId.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("일정 작성자가 아닙니다.");
+            throw new AccessDeniedException();
         }
         if(!byId.getPwd().equals(requestDto.getPwd())) {
             throw new InvalidPasswordException();
@@ -79,7 +80,7 @@ public class TodoSvcImpl implements TodoService {
             insert = todoRepo.insert(todo);
         } catch (DataAccessException e) {
             log.error(e.getMessage(),e);
-            throw new FailToCreateTodoException("일정등록 실패");
+            throw new FailToCreateTodoException(ErrorCode.DB_ERROR);
         }
 
         return new ResponseTodoDto(insert);
@@ -88,10 +89,10 @@ public class TodoSvcImpl implements TodoService {
     @Override
     @Transactional
     public int update(Long userId, Long todoId, TodoUpdateRequestDto requestDto) {
-        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException("일정 "+todoId + " 을 찾을수 없습니다."));
+        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException());
 
         if(!byId.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("일정 작성자가 아닙니다.");
+            throw new AccessDeniedException();
         }
         if(!byId.getPwd().equals(requestDto.getPwd())) {
             throw new InvalidPasswordException();

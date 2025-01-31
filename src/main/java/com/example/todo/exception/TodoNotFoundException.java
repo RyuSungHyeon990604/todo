@@ -1,10 +1,10 @@
 package com.example.todo.exception;
 
-public class TodoNotFoundException extends RuntimeException {
-    public TodoNotFoundException(String message) {
-        super(message);
-    }
-    public TodoNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+import com.example.todo.code.ErrorCode;
+
+public class TodoNotFoundException extends MyException {
+
+    public TodoNotFoundException() {
+        super(ErrorCode.TODO_NOT_FOUND);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.todo.exception;
 
-public class InvalidPasswordException extends RuntimeException {
+import com.example.todo.code.ErrorCode;
+
+public class InvalidPasswordException extends MyException {
     public InvalidPasswordException() {
-        super("Invalid Password");
+        super(ErrorCode.INVALID_PASSWORD);
     }
 }

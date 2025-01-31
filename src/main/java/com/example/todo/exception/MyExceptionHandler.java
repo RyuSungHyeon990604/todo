@@ -1,6 +1,7 @@
 package com.example.todo.exception;
 
 import com.example.todo.code.ErrorCode;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,77 +10,59 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class MyExceptionHandler {
 
+    @ExceptionHandler(MyException.class)
+    public ResponseEntity<ExceptionResponse> accessDeniedException(MyException e) {
+        String errorMessage = e.getErrorMessage();
+        String errorCode = e.getErrorCode();
+        ExceptionResponse response = new ExceptionResponse(errorMessage, errorCode);
+        return ResponseEntity.badRequest().body(response);
+    }
+
     //request 유효성 체크
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> methodArgumentNotValidException(MethodArgumentNotValidException e){
-        ErrorCode errorCode = ErrorCode.INVALID_INPUT_VALUE;
+    public ResponseEntity<ExceptionResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
         // 유효성 검사 실패한 모든 필드와 에러 메시지를 추출
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         List<String> errorMessages = fieldErrors.stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.toList());
 
-        ExceptionResponse response = new ExceptionResponse("Validation failed" + errorMessages , errorCode);
+        ExceptionResponse response = new ExceptionResponse("Validation failed" + errorMessages, errorCode.getCode());
         return ResponseEntity.badRequest().body(response);
     }
 
-    //일정등록 실패했을때
-    @ExceptionHandler(FailToCreateTodoException.class)
-    public ResponseEntity<ExceptionResponse> failToCreateTodoException(FailToCreateTodoException e){
-        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(),errorCode);
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    //사용자 데이터가 존재하지않을때
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> userNotFoundException(UserNotFoundException e){
-        ErrorCode errorCode = ErrorCode.USER_NOT_FOUND;
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(),errorCode);
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    //일정 데이터가 존재하지않을때
-    @ExceptionHandler(TodoNotFoundException.class)
-    public ResponseEntity<ExceptionResponse> todoNotFoundException(TodoNotFoundException e){
-        ErrorCode errorCode = ErrorCode.TODO_NOT_FOUND;
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(),errorCode);
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    //비밀번호 오류
-    @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ExceptionResponse> invalidPasswordException(InvalidPasswordException e){
-        ErrorCode errorCode = ErrorCode.INVALID_PASSWORD;
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(),errorCode);
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    //권한이없는 데이터를 수정, 삭제 접근했을때
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponse> accessDeniedException(AccessDeniedException e){
-        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(),errorCode);
-        return ResponseEntity.badRequest().body(response);
-    }
-
-    //중복된 키값(unique, pk)
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ExceptionResponse> duplicateKeyException(DuplicateKeyException e){
-        ErrorCode errorCode = ErrorCode.DUPLICATE_KEK;
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(),errorCode);
+    public ResponseEntity<ExceptionResponse> duplicateKeyException(DuplicateKeyException e) {
+        String errorField = getDuplicateField(e.getMessage());
+        String code = ErrorCode.DUPLICATE_KEY.getCode();
+        String errorMessage = ErrorCode.DUPLICATE_KEY.getMessage(errorField);
+        ExceptionResponse response = new ExceptionResponse(errorMessage, code);
         return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<ExceptionResponse> missingRequestHeaderException(MissingRequestHeaderException e){
-        ErrorCode errorCode = ErrorCode.MISSING_REQUEST_HEADER;
-        ExceptionResponse response = new ExceptionResponse(e.getMessage(),errorCode);
+    public ResponseEntity<ExceptionResponse> missingRequestHeaderException(MissingRequestHeaderException e) {
+        String missingHeader = e.getHeaderName();
+        String code = ErrorCode.MISSING_REQUEST_HEADER.getCode();
+        String errorMessage = ErrorCode.MISSING_REQUEST_HEADER.getMessage(missingHeader);
+        ExceptionResponse response = new ExceptionResponse(errorMessage, code);
         return ResponseEntity.badRequest().body(response);
+    }
+
+    private String getDuplicateField(String message) {
+        Pattern pattern = Pattern.compile("for key '(.+?)'"); // MySQL 기준 패턴
+        Matcher matcher = pattern.matcher(message);
+        if (matcher.find()) {
+            return matcher.group(1); // ✅ 중복된 필드명 반환
+        }
+        return "unknown";
     }
 }

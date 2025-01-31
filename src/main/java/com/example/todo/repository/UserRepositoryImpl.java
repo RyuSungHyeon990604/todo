@@ -51,7 +51,7 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             return jdbcTemplate.queryForObject("select * from users where id = ?", userMapper(), id);
         } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException("사용자" + id + "가 존재하지않습니다.");
+            throw new UserNotFoundException();
         }
     }
 

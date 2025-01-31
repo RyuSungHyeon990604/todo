@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 public class ExceptionResponse {
     String message;
-    int code;
-    public ExceptionResponse(String message, ErrorCode code) {
+    String code;
+    public ExceptionResponse(String message, String code) {
         this.message = message;
-        this.code = code.getCode();
+        this.code = code;
     }
 }
