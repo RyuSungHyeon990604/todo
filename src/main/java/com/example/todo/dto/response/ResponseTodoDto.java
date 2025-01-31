@@ -12,14 +12,12 @@ public class ResponseTodoDto {
     private Long userId;
     private String userName;
     private String todo;
-    private String pwd;
     private LocalDateTime modDt;
     public ResponseTodoDto(Todo todo) {
         this.id = todo.getId();
         this.userName = todo.getUser().getName();
         this.userId = todo.getUser().getId();
         this.todo = todo.getTodo();
-        this.pwd = todo.getPwd();
         this.modDt = todo.getModDt();
     }
 }

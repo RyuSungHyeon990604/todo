@@ -13,8 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TodoCreateRequestDto {
     @NotNull
-    private Long userId;
-    @NotNull
     @Size(max = 200)
     private String todo;
     @NotNull

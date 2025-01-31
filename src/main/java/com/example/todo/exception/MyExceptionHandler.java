@@ -4,6 +4,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -64,6 +65,12 @@ public class MyExceptionHandler {
     //중복된 키값(unique, pk)
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<ExceptionResponse> duplicateKeyException(DuplicateKeyException e){
+        ExceptionResponse response = new ExceptionResponse(e.getMessage());
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ExceptionResponse> missingRequestHeaderException(MissingRequestHeaderException e){
         ExceptionResponse response = new ExceptionResponse(e.getMessage());
         return ResponseEntity.badRequest().body(response);
     }

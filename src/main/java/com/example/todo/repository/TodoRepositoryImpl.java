@@ -3,6 +3,7 @@ package com.example.todo.repository;
 import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class TodoRepositoryImpl implements TodoRepository {
@@ -57,7 +59,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public Todo findById(Long id) {
+    public Optional<Todo> findById(Long id) {
         String sql = "select t.id         as todo_id" +
                 "          , t.todo       as todo" +
                 "          , t.pwd        as pwd" +
@@ -72,9 +74,12 @@ public class TodoRepositoryImpl implements TodoRepository {
                 "      inner join users u" +
                 "              on t.user_id = u.id" +
                 "      where t.id = ?";
-
-        return jdbcTemplate.queryForObject(sql, todoRowMapper(), id);
-
+        try {
+            Todo todo = jdbcTemplate.queryForObject(sql, todoRowMapper(), id);
+            return Optional.of(todo);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -93,8 +98,6 @@ public class TodoRepositoryImpl implements TodoRepository {
 
         Number key = simpleJdbcInsert.executeAndReturnKey(new MapSqlParameterSource(params));
         return new Todo(key.longValue(), todo.getUser(), todo.getTodo(), todo.getPwd(), now, now);
-
-
     }
 
     @Override
@@ -105,8 +108,8 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public int update(Long id, TodoUpdateRequestDto todoDto) {
-        return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now().withNano(0), id);
+    public int update(Long todoId, TodoUpdateRequestDto todoDto) {
+        return jdbcTemplate.update("update todo set todo = ?, mod_dt = ? where id = ?", todoDto.getTodo(), LocalDateTime.now().withNano(0), todoId);
     }
 
 

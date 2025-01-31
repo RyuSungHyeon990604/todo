@@ -3,7 +3,8 @@ package com.example.todo.repository;
 import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 import com.example.todo.entity.User;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class NamedParameterJdbcTodoRepositoryImpl implements TodoRepository {
@@ -64,7 +66,7 @@ public class NamedParameterJdbcTodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public Todo findById(Long id) {
+    public Optional<Todo> findById(Long id) {
         String sql = "select t.id         as todo_id" +
                 "          , t.todo       as todo" +
                 "          , t.pwd        as pwd" +
@@ -82,8 +84,11 @@ public class NamedParameterJdbcTodoRepositoryImpl implements TodoRepository {
 
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-
-        return namedParameterJdbcTemplate.queryForObject(sql, params, todoRowMapper());
+        try {
+            return Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(sql, params, todoRowMapper()));
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

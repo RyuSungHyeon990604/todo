@@ -10,7 +10,6 @@ import com.example.todo.exception.*;
 import com.example.todo.repository.TodoRepository;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -26,7 +26,7 @@ public class TodoSvcImpl implements TodoService {
     private final TodoRepository todoRepo;
     private final UserRepository userRepo;
 
-    public TodoSvcImpl(@Qualifier("namedParameterJdbcTodoRepositoryImpl") TodoRepository todoRepo, UserRepository userRepo) {
+    public TodoSvcImpl(@Qualifier("todoRepositoryImpl") TodoRepository todoRepo, UserRepository userRepo) {
         this.todoRepo = todoRepo;
         this.userRepo = userRepo;
     }
@@ -52,39 +52,35 @@ public class TodoSvcImpl implements TodoService {
     }
 
     @Override
-    public ResponseTodoDto findById(Long id) {
-        try {
-            Todo res = todoRepo.findById(id);
-            return new ResponseTodoDto(res);
-        } catch (EmptyResultDataAccessException e) {
-            log.error(e.getMessage(),e);
-            throw new TodoNotFoundException("일정 "+ id + " 이 존재하지않습니다.");
-        }
+    public ResponseTodoDto findById(Long todoId) {
 
+        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException("일정 "+todoId + " 을 찾을수 없습니다."));
+
+        return new ResponseTodoDto(byId);
     }
 
     @Override
     @Transactional
-    public int deleteById(Long id, TodoDeleteRequestDto requestDto) {
-        Todo byId = todoRepo.findById(id);
+    public int deleteById(Long userId, Long todoId, TodoDeleteRequestDto requestDto) {
+        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException("일정 "+todoId + " 을 찾을수 없습니다."));
 
-        if(byId.getUser().getId().equals(requestDto.getUserId())) {
-            throw new AccessDeniedException("일정을 등록한 사용자가 아닙니다.");
+        if(!byId.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("일정 작성자가 아닙니다.");
         }
         if(!byId.getPwd().equals(requestDto.getPwd())) {
             throw new InvalidPasswordException();
         }
 
-        return todoRepo.deleteById(id);
+        return todoRepo.deleteById(todoId);
     }
 
     @Override
     @Transactional
-    public ResponseTodoDto insert(TodoCreateRequestDto todoDto) {
+    public ResponseTodoDto insert(Long userId, TodoCreateRequestDto requestDto) {
         //해당 사용자가 존재하면 insert
-        User user = userRepo.findById(todoDto.getUserId());
+        User user = userRepo.findById(userId);
 
-        Todo todo = todoDto.toEntity(user);
+        Todo todo = requestDto.toEntity(user);
         Todo insert;
         try {
             insert = todoRepo.insert(todo);
@@ -93,24 +89,21 @@ public class TodoSvcImpl implements TodoService {
             throw new FailToCreateTodoException("일정등록 실패");
         }
 
-
-        ResponseTodoDto res = new ResponseTodoDto(insert);
-
-        return res;
+        return new ResponseTodoDto(insert);
     }
 
     @Override
     @Transactional
-    public int update(Long id, TodoUpdateRequestDto todoDto) {
-        ResponseTodoDto byId = findById(id);
+    public int update(Long userId, Long todoId, TodoUpdateRequestDto requestDto) {
+        Todo byId = todoRepo.findById(todoId).orElseThrow(()->new TodoNotFoundException("일정 "+todoId + " 을 찾을수 없습니다."));
 
-        if(!byId.getUserId().equals(todoDto.getUserId())) {
-            throw new AccessDeniedException("일정을 등록한 사용자가 아닙니다.");
+        if(!byId.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("일정 작성자가 아닙니다.");
         }
-        if(!byId.getPwd().equals(todoDto.getPwd())) {
+        if(!byId.getPwd().equals(requestDto.getPwd())) {
             throw new InvalidPasswordException();
         }
 
-        return todoRepo.update(id, todoDto);
+        return todoRepo.update(todoId, requestDto);
     }
 }

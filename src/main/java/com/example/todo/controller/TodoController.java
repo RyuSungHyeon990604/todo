@@ -30,27 +30,27 @@ public class TodoController {
         return ResponseEntity.ok(new ResponseDto<>(all,"success"));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<ResponseTodoDto>> findById(@PathVariable Long id){
-        ResponseTodoDto byId = todoService.findById(id);
+    @GetMapping("/{todoId}")
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> findById(@PathVariable Long todoId){
+        ResponseTodoDto byId = todoService.findById(todoId);
         return ResponseEntity.ok(new ResponseDto<>(byId, "success"));
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseDto<ResponseTodoDto>> create(@RequestBody @Valid TodoCreateRequestDto createDto){
-        ResponseTodoDto insert = todoService.insert(createDto);
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> create(@RequestHeader("userId") Long userId, @RequestBody @Valid TodoCreateRequestDto createDto){
+        ResponseTodoDto insert = todoService.insert(userId,createDto);
         return ResponseEntity.ok(new ResponseDto<>(insert, "created"));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto<Void>> update(@PathVariable Long id, @RequestBody @Valid TodoUpdateRequestDto updateDto){
-        int updated = todoService.update(id, updateDto);
+    @PatchMapping("/{todoId}")
+    public ResponseEntity<ResponseDto<Void>> update(@RequestHeader("userId") Long userId, @PathVariable Long todoId, @RequestBody @Valid TodoUpdateRequestDto updateDto){
+        int updated = todoService.update(userId, todoId, updateDto);
         return ResponseEntity.ok(new ResponseDto<>("success"));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<Void>> delete(@PathVariable Long id, @RequestBody @Valid TodoDeleteRequestDto deleteDto){
-        int deleted = todoService.deleteById(id,deleteDto);
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<ResponseDto<Void>> delete(@RequestHeader("userId") Long userId, @PathVariable Long todoId, @RequestBody @Valid TodoDeleteRequestDto deleteDto){
+        int deleted = todoService.deleteById(userId, todoId, deleteDto);
         return ResponseEntity.ok(new ResponseDto<>("success"));
     }
 
