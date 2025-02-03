@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 public class MyExceptionHandler {
 
     @ExceptionHandler(MyException.class)
-    public ResponseEntity<ExceptionResponse> accessDeniedException(MyException e) {
-        log.error(e.getMessage(),e);
+    public ResponseEntity<ExceptionResponse> applicationException(MyException e) {
+        log.warn(e.getMessage(),e);
         String errorMessage = e.getErrorMessage();
         String errorCode = e.getErrorCode();
         ExceptionResponse response = new ExceptionResponse(errorMessage, errorCode);
@@ -33,7 +33,7 @@ public class MyExceptionHandler {
     //request 유효성 체크
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error(e.getMessage(),e);
+        log.warn(e.getMessage(),e);
         String code = ErrorCode.METHOD_ARGUMENT_NOT_VALID.getCode();
         String errorMessage = ErrorCode.METHOD_ARGUMENT_NOT_VALID.getMessage();
         // 유효성 검사 실패한 모든 필드와 에러 메시지를 추출
@@ -47,7 +47,7 @@ public class MyExceptionHandler {
 
     @ExceptionHandler(DuplicateKeyException.class)
     public ResponseEntity<ExceptionResponse> duplicateKeyException(DuplicateKeyException e) {
-        log.error(e.getMessage(),e);
+        log.warn(e.getMessage(),e);
         String errorField = getDuplicateField(e.getMessage());
         String code = ErrorCode.DUPLICATE_KEY.getCode();
         String errorMessage = ErrorCode.DUPLICATE_KEY.getMessage(errorField);
@@ -57,7 +57,7 @@ public class MyExceptionHandler {
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ExceptionResponse> missingRequestHeaderException(MissingRequestHeaderException e) {
-        log.error(e.getMessage(),e);
+        log.warn(e.getMessage(),e);
         String missingHeader = e.getHeaderName();
         String code = ErrorCode.MISSING_REQUEST_HEADER.getCode();
         String errorMessage = ErrorCode.MISSING_REQUEST_HEADER.getMessage(missingHeader);
