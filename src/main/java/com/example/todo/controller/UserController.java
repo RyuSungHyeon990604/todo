@@ -1,6 +1,6 @@
 package com.example.todo.controller;
 
-import com.example.todo.dto.ResponseDto;
+import com.example.todo.dto.Response;
 import com.example.todo.dto.request.UserCreateRequestDto;
 import com.example.todo.dto.request.UserUpdateRequestDto;
 import com.example.todo.dto.response.ResponseUserDto;
@@ -19,15 +19,15 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<ResponseDto<ResponseUserDto>> createUser(@RequestBody @Valid UserCreateRequestDto createDto) {
+    public ResponseEntity<Response<ResponseUserDto>> createUser(@RequestBody @Valid UserCreateRequestDto createDto) {
         ResponseUserDto responseUserDto = userService.addUser(createDto);
-        return ResponseEntity.ok(new ResponseDto<>(responseUserDto,"success"));
+        return ResponseEntity.ok(new Response<>(responseUserDto,"success"));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ResponseDto<Void>> updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateRequestDto updateDto){
+    public ResponseEntity<Response<Void>> updateUser(@PathVariable Long id, @RequestBody @Valid UserUpdateRequestDto updateDto){
         userService.updateUser(id, updateDto);
-        return ResponseEntity.ok(new ResponseDto<>("success"));
+        return ResponseEntity.ok(new Response<>("success"));
     }
 
 
