@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -28,14 +29,14 @@ public class MyExceptionHandler {
     //request 유효성 체크
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ExceptionResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        ErrorCode errorCode = ErrorCode.METHOD_ARGUMENT_NOT_VALID;
+        String code = ErrorCode.METHOD_ARGUMENT_NOT_VALID.getCode();
+        String errorMessage = ErrorCode.METHOD_ARGUMENT_NOT_VALID.getMessage();
         // 유효성 검사 실패한 모든 필드와 에러 메시지를 추출
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
-        List<String> errorMessages = fieldErrors.stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .collect(Collectors.toList());
+        Map<String, String> errorFields = fieldErrors.stream()
+                .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage,(m1,m2)->m1));
 
-        ExceptionResponse response = new ExceptionResponse("Validation failed" + errorMessages, errorCode.getCode());
+        ExceptionResponse response = new ExceptionResponse(errorMessage, code, errorFields);
         return ResponseEntity.badRequest().body(response);
     }
 

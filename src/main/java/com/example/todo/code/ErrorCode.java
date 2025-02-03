@@ -3,7 +3,7 @@ package com.example.todo.code;
 public enum ErrorCode {
     METHOD_ARGUMENT_NOT_VALID("0002","입력값이 올바르지 않습니다"),
     MISSING_REQUEST_HEADER("0003","필수요청 헤더가 누락되었습니다 : %s"),
-    DB_ERROR("0004",null),
+    DB_ERROR("9999",null),
     DUPLICATE_KEY("0005","이미 존재하는 데이터입니다 : %s"),
 
     TODO_NOT_FOUND("1000","일정이 없습니다"),
