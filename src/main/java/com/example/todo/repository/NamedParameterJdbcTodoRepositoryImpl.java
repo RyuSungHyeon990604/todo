@@ -31,7 +31,7 @@ public class NamedParameterJdbcTodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<Todo> findAll(Long userId, Long page, LocalDate date) {
+    public List<Todo> findAll(Long userId, Long page, Long pageSize, LocalDate date) {
         String defaultSql = "select t.id         as todo_id" +
                         "          , t.todo       as todo" +
                         "          , t.pwd        as pwd" +

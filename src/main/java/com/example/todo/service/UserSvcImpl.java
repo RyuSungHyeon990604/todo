@@ -5,11 +5,13 @@ import com.example.todo.dto.request.UserCreateRequestDto;
 import com.example.todo.dto.request.UserUpdateRequestDto;
 import com.example.todo.dto.response.ResponseUserDto;
 import com.example.todo.entity.User;
+import com.example.todo.exception.FailToCreateException;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,13 +26,13 @@ public class UserSvcImpl implements UserService {
     @Transactional
     public ResponseUserDto addUser(UserCreateRequestDto userDto) {//DTO -> Entity
         User user = userDto.toEntity();
-        try {
-            User insert = userRepository.insert(user);
-            return new ResponseUserDto(insert);
-        } catch (DuplicateKeyException e) {
-            log.error(e.getMessage(),e);
-            throw e;
+
+        Optional<User> insert = userRepository.insert(user);
+        if (insert.isEmpty()) {
+            throw new FailToCreateException(ErrorCode.USER_NOT_FOUND);
         }
+        return new ResponseUserDto(insert.get());
+
     }
 
     @Override

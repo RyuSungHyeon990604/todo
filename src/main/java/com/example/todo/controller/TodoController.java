@@ -30,7 +30,7 @@ public class TodoController {
 
     @GetMapping("")
     public ResponseEntity<ResponseDto<ResponseTodoDto>> findAll(@ModelAttribute @Valid TodoFindRequestDto requestDto) {
-        List<ResponseTodoDto> all = todoService.findAll(requestDto.getUserId(), requestDto.getPage(), requestDto.getLocalDate());
+        List<ResponseTodoDto> all = todoService.findAll(requestDto.getUserId(), requestDto.getPage(), requestDto.getPageSize(), requestDto.getLocalDate());
         return ResponseEntity.ok(new ResponseDto<>(all,"success"));
     }
 

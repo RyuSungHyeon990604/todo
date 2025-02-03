@@ -3,6 +3,7 @@ package com.example.todo.repository;
 import com.example.todo.dto.request.UserUpdateRequestDto;
 import com.example.todo.entity.User;
 import com.example.todo.exception.UserNotFoundException;
+import com.example.todo.rowMapper.UserRowMapper;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
@@ -26,7 +28,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User insert(User user) {
+    public Optional<User> insert(User user) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(this.jdbcTemplate);
         insert.withTableName("users").usingGeneratedKeyColumns("id");
         LocalDateTime now = LocalDateTime.now().withNano(0);
@@ -38,7 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
         params.put("mod_dt", now);
 
         Number key = insert.executeAndReturnKey(new MapSqlParameterSource(params));
-        return new User(key.longValue(), user.getName(), user.getEmail(), now, now);
+        return Optional.of(new User(key.longValue(), user.getName(), user.getEmail(), now, now));
     }
 
     @Override
@@ -47,37 +49,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findById(Long id) {
-        try {
-            return jdbcTemplate.queryForObject("select * from users where id = ?", userMapper(), id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new UserNotFoundException();
-        }
-    }
-
-
-    private RowMapper<User> userMapper() {
-        return new RowMapper<User>() {
-            @Override
-            public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new User(
-                        rs.getLong("id"),
-                        rs.getString("name"),
-                        rs.getString("email"),
-                        rs.getTimestamp("create_dt").toLocalDateTime(),
-                        rs.getTimestamp("mod_dt").toLocalDateTime()
-                );
-            }
-        };
-    }
-
-    @Override
-    public boolean isDuplicate(String columnName, String value) {
-        String sql = "select count(*) " +
-                "       from users " +
-                "      where 1 = 1" +
-                "        and " + columnName + " = ?";
-        int i = jdbcTemplate.queryForObject(sql, Integer.class,value);
-        return i > 0;
+    public Optional<User> findById(Long id) {
+        User user = jdbcTemplate.queryForObject("select * from users where id = ?", new UserRowMapper(), id);
+        return Optional.ofNullable(user);
     }
 }

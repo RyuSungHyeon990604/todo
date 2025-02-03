@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface TodoRepository {
 
-    List<Todo> findAll(Long userId, Long page, LocalDate date);
+    List<Todo> findAll(Long userId, Long page, Long pageSize, LocalDate date);
 
     Optional<Todo> findById(Long id);
 
