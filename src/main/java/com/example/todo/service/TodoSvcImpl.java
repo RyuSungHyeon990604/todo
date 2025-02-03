@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Slf4j
 public class TodoSvcImpl implements TodoService {
     private final TodoRepository todoRepo;
     private final UserRepository userRepo;

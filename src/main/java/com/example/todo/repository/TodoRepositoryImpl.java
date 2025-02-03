@@ -74,12 +74,8 @@ public class TodoRepositoryImpl implements TodoRepository {
                 "      inner join users u" +
                 "              on t.user_id = u.id" +
                 "      where t.id = ?";
-        try {
-            Todo todo = jdbcTemplate.queryForObject(sql, new TodoRowMapper(), id);
-            return Optional.of(todo);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return Optional.empty();
-        }
+        Todo todo = jdbcTemplate.queryForObject(sql, new TodoRowMapper(), id);
+        return Optional.ofNullable(todo);
     }
 
     @Override

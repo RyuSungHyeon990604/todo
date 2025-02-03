@@ -6,6 +6,7 @@ import com.example.todo.dto.request.UserUpdateRequestDto;
 import com.example.todo.dto.response.ResponseUserDto;
 import com.example.todo.entity.User;
 import com.example.todo.exception.FailToCreateException;
+import com.example.todo.exception.UserNotFoundException;
 import com.example.todo.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,11 @@ public class UserSvcImpl implements UserService {
 
     @Override
     public int updateUser(Long id, UserUpdateRequestDto userDto) {
-        return userRepository.update(id, userDto);
+        int update = userRepository.update(id, userDto);
+
+        if (update == 0) {
+            throw new UserNotFoundException();
+        }
+        return 1;
     }
 }
