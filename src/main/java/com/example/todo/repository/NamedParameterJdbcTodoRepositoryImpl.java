@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,7 @@ public class NamedParameterJdbcTodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<Todo> findAll(Long userId, Long page) {
+    public List<Todo> findAll(Long userId, Long page, LocalDate date) {
         String defaultSql = "select t.id         as todo_id" +
                         "          , t.todo       as todo" +
                         "          , t.pwd        as pwd" +
@@ -52,6 +53,11 @@ public class NamedParameterJdbcTodoRepositoryImpl implements TodoRepository {
         if (userId != null) {
             sql.append(" and t.user_id = :userId");
             params.put("userId", userId);
+        }
+
+        if (date != null) {
+            sql.append(" and t.create_dt >= :date");
+            params.put("date", date);
         }
 
         sql.append(" order by mod_dt desc ");

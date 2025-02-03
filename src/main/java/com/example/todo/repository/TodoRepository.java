@@ -3,12 +3,14 @@ package com.example.todo.repository;
 import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface TodoRepository {
 
-    List<Todo> findAll(Long userId, Long page);
+    List<Todo> findAll(Long userId, Long page, LocalDate date);
 
     Optional<Todo> findById(Long id);
 

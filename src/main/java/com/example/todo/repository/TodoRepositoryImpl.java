@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ public class TodoRepositoryImpl implements TodoRepository {
     }
 
     @Override
-    public List<Todo> findAll(Long userId, Long page) {
+    public List<Todo> findAll(Long userId, Long page, LocalDate date) {
         String defaultSql = "select t.id         as todo_id" +
                 "          , t.todo       as todo" +
                 "          , t.pwd        as pwd" +
@@ -45,9 +46,11 @@ public class TodoRepositoryImpl implements TodoRepository {
                 "              on t.user_id = u.id" +
                 "      where 1 = 1 ";
         StringBuilder sql = new StringBuilder(defaultSql);
-        if(userId != null) {
-            sql.append(" and t.user_id =");
-            sql.append(userId);
+        if (userId != null) {
+            sql.append(" and t.user_id = " + userId);
+        }
+        if (date != null) {
+            sql.append(" and date_format(t.create_dt,'%Y-%m-%d') = '"+date+"' ");
         }
         sql.append(" order by mod_dt desc ");
         //페이지를 설정하지않았다면 1페이지 조회

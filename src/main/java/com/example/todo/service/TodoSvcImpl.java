@@ -17,6 +17,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +35,9 @@ public class TodoSvcImpl implements TodoService {
     }
 
     @Override
-    public List<ResponseTodoDto> findAll(Long userId, Long page) {
+    public List<ResponseTodoDto> findAll(Long userId, Long page, LocalDate date) {
         List<ResponseTodoDto> res = new ArrayList<>();
-        List<Todo> all = todoRepo.findAll(userId, page);
+        List<Todo> all = todoRepo.findAll(userId, page, date);
 
         //List<Entity> -> List<Dto>
         for (Todo todo : all) {

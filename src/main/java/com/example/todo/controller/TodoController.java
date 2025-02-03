@@ -3,14 +3,18 @@ package com.example.todo.controller;
 import com.example.todo.dto.*;
 import com.example.todo.dto.request.TodoCreateRequestDto;
 import com.example.todo.dto.request.TodoDeleteRequestDto;
+import com.example.todo.dto.request.TodoFindRequestDto;
 import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.dto.response.ResponseTodoDto;
 import com.example.todo.service.TodoService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -25,8 +29,8 @@ public class TodoController {
     }
 
     @GetMapping("")
-    public ResponseEntity<ResponseDto<ResponseTodoDto>> findAll(@RequestParam(value = "userId", required = false) Long userId, @RequestParam(value = "page", defaultValue = "0") Long page){
-        List<ResponseTodoDto> all = todoService.findAll(userId,page);
+    public ResponseEntity<ResponseDto<ResponseTodoDto>> findAll(@ModelAttribute @Valid TodoFindRequestDto requestDto) {
+        List<ResponseTodoDto> all = todoService.findAll(requestDto.getUserId(), requestDto.getPage(), requestDto.getLocalDate());
         return ResponseEntity.ok(new ResponseDto<>(all,"success"));
     }
 
