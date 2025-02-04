@@ -2,7 +2,9 @@ package com.example.todo.repository;
 
 import com.example.todo.dto.request.TodoUpdateRequestDto;
 import com.example.todo.entity.Todo;
+import com.example.todo.exception.TodoNotFoundException;
 import com.example.todo.rowMapper.TodoRowMapper;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -74,8 +76,12 @@ public class TodoRepositoryImpl implements TodoRepository {
                 "      inner join users u" +
                 "              on t.user_id = u.id" +
                 "      where t.id = ?";
-        Todo todo = jdbcTemplate.queryForObject(sql, new TodoRowMapper(), id);
-        return Optional.ofNullable(todo);
+        try {
+            Todo todo = jdbcTemplate.queryForObject(sql, new TodoRowMapper(), id);
+            return Optional.ofNullable(todo);
+        } catch (EmptyResultDataAccessException e) {
+            throw new TodoNotFoundException();
+        }
     }
 
     @Override

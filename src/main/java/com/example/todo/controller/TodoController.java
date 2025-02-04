@@ -57,13 +57,13 @@ public class TodoController {
     }
 
     @PatchMapping("/{todoId}")
-    public ResponseEntity<Response<Void>> update(@RequestHeader("userId") Long userId, @PathVariable Long todoId, @RequestBody @Valid TodoUpdateRequestDto updateDto){
+    public ResponseEntity<Response<String>> update(@RequestHeader("userId") Long userId, @PathVariable Long todoId, @RequestBody @Valid TodoUpdateRequestDto updateDto){
         int updated = todoService.update(userId, todoId, updateDto);
         return ResponseEntity.ok(new Response<>("success"));
     }
 
     @DeleteMapping("/{todoId}")
-    public ResponseEntity<Response<Void>> delete(@RequestHeader("userId") Long userId, @PathVariable Long todoId, @RequestBody @Valid TodoDeleteRequestDto deleteDto){
+    public ResponseEntity<Response<String>> delete(@RequestHeader("userId") Long userId, @PathVariable Long todoId, @RequestBody @Valid TodoDeleteRequestDto deleteDto){
         int deleted = todoService.deleteById(userId, todoId, deleteDto);
         return ResponseEntity.ok(new Response<>("success"));
     }
